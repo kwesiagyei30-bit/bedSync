@@ -1,1 +1,2146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#0B1D3A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>BedSync — VitalGrid Health Ltd</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
 
+:root{
+  --navy:#0B1D3A;--teal:#0D7377;--teal2:#0D9488;--gold:#E07B2A;
+  --red:#EF4444;--green:#16A34A;--amber:#F59E0B;--purple:#8B5CF6;
+  --g50:#F8FAFC;--g100:#F1F5F9;--g200:#E2E8F0;--g300:#CBD5E1;
+  --g400:#94A3B8;--g500:#64748B;--g700:#334155;--g900:#0F172A;
+  --dark:#1E293B;--white:#FFFFFF;
+  --font:'League Spartan',-apple-system,sans-serif;
+  --mono:'IBM Plex Mono',monospace;
+  --safe-t:env(safe-area-inset-top,0px);
+  --safe-b:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;margin:0;padding:0;font-family:var(--font);-webkit-tap-highlight-color:transparent}
+h1,h2,h3,h4,h5,h6,.card-title,.hdr-title,.stat-n,.ward-name,.inc-type{font-weight:800!important}
+html,body{height:100%;overflow:hidden;background:var(--navy)}
+#app{width:100%;height:100%;position:relative;overflow:hidden}
+
+/* ── SCREENS ── */
+.screen{display:none;flex-direction:column;width:100%;height:100%;position:absolute;inset:0;background:var(--g50);overflow:hidden}
+.screen.active{display:flex}
+@keyframes sIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.screen{animation:sIn .25s cubic-bezier(.22,1,.36,1) both}
+
+/* ── HEADER ── */
+.app-hdr{background:var(--navy);color:#fff;padding:calc(var(--safe-t) + 14px) 16px 14px;flex-shrink:0}
+.hdr-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.hdr-brand{font-size:1.05rem;font-weight:800;color:#fff;letter-spacing:-.02em}
+.hdr-brand em{color:var(--teal);font-style:normal}
+.hdr-dot{width:28px;height:28px;background:var(--teal);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.85rem;margin-right:8px;flex-shrink:0}
+.hdr-logo{display:flex;align-items:center}
+.hdr-sub{font-size:.7rem;color:rgba(255,255,255,.5);margin-bottom:2px;letter-spacing:.04em;text-transform:uppercase}
+.hdr-title{font-size:1.3rem;font-weight:800;color:#fff;line-height:1.2}
+.live-badge{display:inline-flex;align-items:center;gap:5px;font-size:.6rem;font-weight:800;color:#fff;background:rgba(22,163,74,.2);border:1px solid rgba(22,163,74,.4);padding:3px 8px;border-radius:20px;letter-spacing:.06em}
+@keyframes livePulse{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.4)}50%{box-shadow:0 0 0 6px rgba(34,197,94,0)}}
+.live-dot{width:6px;height:6px;border-radius:50%;background:#22C55E;animation:livePulse 2s ease-in-out infinite}
+
+/* ── SCROLL ── */
+.scroll{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding:12px 14px calc(var(--safe-b) + 80px)}
+
+/* ── BOTTOM NAV ── */
+.bnav{display:flex;background:#fff;border-top:1px solid var(--g200);flex-shrink:0;padding-bottom:var(--safe-b)}
+.bni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px 8px;font-size:.58rem;font-weight:700;color:var(--g400);cursor:pointer;gap:3px;position:relative;transition:color .15s}
+.bni.active{color:var(--teal)}
+.bni-ico{font-size:1.2rem;line-height:1}
+.bni-dot{position:absolute;bottom:6px;width:4px;height:4px;border-radius:50%;background:var(--teal)}
+
+/* ── CARDS ── */
+.card{background:#fff;border-radius:14px;padding:14px;margin-bottom:10px;border:1px solid var(--g100);box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.card-title{font-size:.72rem;font-weight:800;color:var(--g500);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
+.card-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+
+/* ── STAT BOXES ── */
+.stats-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px}
+.stat-box{background:#fff;border-radius:12px;padding:12px 8px;text-align:center;border:1px solid var(--g100)}
+.stat-n{font-size:1.6rem;font-weight:800;line-height:1;margin-bottom:2px}
+.stat-l{font-size:.6rem;color:var(--g400);font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.stat-n.green{color:var(--green)}.stat-n.red{color:var(--red)}.stat-n.amber{color:var(--amber)}.stat-n.teal{color:var(--teal)}.stat-n.navy{color:var(--navy)}
+
+/* ── WARD CARD ── */
+.ward-card{background:#fff;border-radius:14px;border:1px solid var(--g100);margin-bottom:10px;overflow:hidden}
+.ward-hdr{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--navy)}
+.ward-ico{width:34px;height:34px;border-radius:9px;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.ward-name{font-size:.88rem;font-weight:800;color:#fff;flex:1}
+.ward-status{font-size:.65rem;color:rgba(255,255,255,.5)}
+.ward-body{padding:12px 14px}
+.ward-stat-row{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-bottom:8px}
+.ws-box{text-align:center;padding:8px 4px;border-radius:8px}
+.ws-box.avail{background:#dcfce7}.ws-box.occup{background:#fee2e2}.ws-box.maint{background:#fef3c7}.ws-box.quar{background:#ede9fe}
+.ws-n{font-size:1.2rem;font-weight:800;line-height:1;margin-bottom:2px}
+.ws-n.avail{color:var(--green)}.ws-n.occup{color:var(--red)}.ws-n.maint{color:var(--amber)}.ws-n.quar{color:var(--purple)}
+.ws-l{font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;opacity:.7}
+.meter-row{margin-top:4px}
+.meter{height:6px;background:var(--g100);border-radius:3px;overflow:hidden;margin-top:2px}
+.meter-fill{height:100%;border-radius:3px;transition:width .6s cubic-bezier(.22,1,.36,1)}
+.meter-fill.g{background:var(--green)}.meter-fill.a{background:var(--amber)}.meter-fill.r{background:var(--red)}
+
+/* ── SERVICE ROW ── */
+.svc-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--g100)}
+.svc-row:last-child{border-bottom:none}
+.svc-ico{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.svc-name{font-size:.82rem;font-weight:700;color:var(--dark)}
+.svc-sub{font-size:.65rem;color:var(--g400)}
+.chip{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:.65rem;font-weight:800;letter-spacing:.04em}
+.chip.g{background:#dcfce7;color:var(--green)}.chip.a{background:#fef3c7;color:#92400e}.chip.r{background:#fee2e2;color:#b91c1c}.chip.p{background:#ede9fe;color:#6d28d9}
+
+/* ── FORMS ── */
+.fg{margin-bottom:12px}
+.fl{display:block;font-size:.7rem;font-weight:700;color:var(--g500);margin-bottom:5px;letter-spacing:.04em;text-transform:uppercase}
+.fi{width:100%;padding:11px 14px;border:1.5px solid var(--g200);border-radius:10px;font-size:.9rem;font-family:var(--font);color:var(--dark);background:#fff;outline:none;transition:border-color .15s,box-shadow .15s}
+.fi:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(13,115,119,.1)}
+textarea.fi{resize:none}
+select.fi{appearance:none;cursor:pointer}
+
+/* ── BUTTONS ── */
+.btn{width:100%;padding:13px;border-radius:12px;border:none;font-size:.9rem;font-weight:800;cursor:pointer;font-family:var(--font);display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .12s,opacity .12s,box-shadow .12s}
+.btn:active{transform:scale(.97);opacity:.9}
+.btn-teal{background:var(--teal);color:#fff;box-shadow:0 4px 16px rgba(13,115,119,.3)}
+.btn-navy{background:var(--navy);color:#fff}
+.btn-red{background:var(--red);color:#fff}
+.btn-gold{background:var(--gold);color:#fff}
+.btn-ghost{background:transparent;color:var(--g500);border:1.5px solid var(--g200)}
+.btn-green{background:var(--green);color:#fff}
+.mt8{margin-top:8px}.mt12{margin-top:12px}.mt16{margin-top:16px}
+
+/* ── STEPPERS ── */
+.stepper{display:flex;align-items:center;gap:10px}
+.step-btn{width:34px;height:34px;border-radius:8px;border:none;background:var(--g100);font-size:1.1rem;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .1s,background .1s}
+.step-btn:active{transform:scale(.88);background:var(--g200)}
+.step-val{font-size:1.3rem;font-weight:800;min-width:36px;text-align:center;color:var(--dark)}
+
+/* ── TOGGLE ── */
+.tog-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--g100)}
+.tog{width:46px;height:26px;border-radius:13px;background:var(--g200);position:relative;cursor:pointer;transition:background .2s;flex-shrink:0;border:none}
+.tog::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left .2s;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.tog.on{background:var(--teal)}.tog.on::after{left:23px}
+.tog.warn{background:var(--amber)}.tog.warn::after{left:23px}
+.tog.off{background:var(--red)}.tog.off::after{left:23px}
+
+/* ── ALERTS / BANNERS ── */
+.ab{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:10px;margin-bottom:8px}
+.ab.r{background:#fee2e2;border-left:3px solid var(--red)}
+.ab.a{background:#fef3c7;border-left:3px solid var(--amber)}
+.ab.g{background:#dcfce7;border-left:3px solid var(--green)}
+.ab.p{background:#ede9fe;border-left:3px solid var(--purple)}
+.ab-ico{font-size:1rem;flex-shrink:0;margin-top:1px}
+.ab-title{font-size:.78rem;font-weight:800;color:var(--dark)}
+.ab-body{font-size:.72rem;color:var(--g500);margin-top:2px}
+
+/* ── INCIDENT CARD ── */
+.inc-card{background:#fff;border-radius:12px;border:1px solid var(--g100);padding:12px;margin-bottom:8px}
+.inc-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px}
+.inc-type{font-size:.82rem;font-weight:800;color:var(--dark)}
+.inc-meta{font-size:.65rem;color:var(--g400);margin-bottom:4px}
+.inc-body{font-size:.75rem;color:var(--g500);line-height:1.5}
+.sev-badge{display:inline-flex;padding:2px 8px;border-radius:12px;font-size:.6rem;font-weight:800;letter-spacing:.06em}
+.sev-badge.low{background:#dcfce7;color:var(--green)}
+.sev-badge.medium{background:#fef3c7;color:#92400e}
+.sev-badge.high{background:#fee2e2;color:var(--red)}
+.sev-badge.critical{background:var(--red);color:#fff}
+
+/* ── SPLASH ── */
+#scr-splash{background:linear-gradient(135deg,#0B1D3A 0%,#0D4A4A 60%,#0B1D3A 100%);display:flex;flex-direction:column;align-items:center;justify-content:center}
+@keyframes logoIn{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:scale(1)}}
+.splash-logo{animation:logoIn .6s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes barGrow{from{width:0}to{width:100%}}
+.splash-bar{height:3px;background:var(--teal);border-radius:2px;animation:barGrow 2.2s ease forwards;animation-delay:.5s}
+
+/* ── LOGIN ── */
+#scr-login{background:var(--navy)}
+.login-card{background:#fff;border-radius:20px 20px 0 0;padding:24px 20px 32px;flex:1;margin-top:auto}
+
+/* ── INCIDENT REPORTING ── */
+.anon-toggle{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--g100);border-radius:10px;margin-bottom:12px;cursor:pointer}
+
+/* ── DESKTOP (GHS) ── */
+.desktop-mode .screen.active#scr-ghs-home{display:flex;flex-direction:row}
+.ds-sidebar{width:220px;background:var(--navy);flex-shrink:0;display:flex;flex-direction:column;padding:0 0 20px}
+.ds-sidebar-logo{padding:20px 16px 14px;border-bottom:1px solid rgba(255,255,255,.07)}
+.ds-sidebar-name{font-size:1rem;font-weight:800;color:#fff}
+.ds-sidebar-name em{color:var(--teal);font-style:normal}
+.ds-sidebar-sub{font-size:.65rem;color:rgba(255,255,255,.35);margin-top:2px}
+.ds-nav{flex:1;overflow-y:auto;padding:8px 0}
+.ds-nav-sec{padding:10px 16px 4px;font-size:.6rem;font-weight:800;color:rgba(255,255,255,.3);letter-spacing:.1em;text-transform:uppercase}
+.ds-nav-item{display:flex;align-items:center;gap:9px;padding:9px 16px;font-size:.8rem;font-weight:700;color:rgba(255,255,255,.55);cursor:pointer;transition:background .12s,color .12s}
+.ds-nav-item.active,.ds-nav-item:hover{background:rgba(255,255,255,.07);color:#fff}
+.ds-nav-item.active{border-left:3px solid var(--teal)}
+.ds-main{flex:1;overflow:hidden;display:flex;flex-direction:column}
+.ds-topbar{display:flex;align-items:center;gap:10px;padding:14px 20px;background:#fff;border-bottom:1px solid var(--g200);flex-shrink:0}
+.ds-topbar-title{font-size:1rem;font-weight:800;color:var(--navy);flex:1}
+.ds-topbar-btn{padding:7px 14px;border-radius:8px;border:none;font-size:.75rem;font-weight:700;cursor:pointer;font-family:var(--font)}
+.ds-topbar-btn.teal{background:var(--teal);color:#fff}
+.ds-topbar-btn.red{background:var(--red);color:#fff}
+.ds-content{flex:1;overflow-y:auto;padding:16px 20px 24px;background:var(--g50)}
+.ds-grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.ds-grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.ds-card{background:#fff;border-radius:14px;border:1px solid var(--g200);overflow:hidden}
+.ds-card-hdr{padding:12px 16px;border-bottom:1px solid var(--g100);background:var(--navy)}
+.ds-card-title{font-size:.82rem;font-weight:800;color:#fff}
+.ds-card-body{padding:14px 16px}
+.ds-tbl{width:100%;border-collapse:collapse;font-size:.78rem}
+.ds-tbl th{text-align:left;padding:8px 10px;font-size:.65rem;font-weight:800;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.06em;background:var(--navy)}
+.ds-tbl td{padding:9px 10px;border-bottom:1px solid var(--g100);color:var(--g700)}
+.ds-tbl tr:hover td{background:var(--g50)}
+.ds-stats{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:16px}
+.ds-stat{background:#fff;border-radius:12px;padding:12px 8px;text-align:center;border:1px solid var(--g200)}
+.ds-stat-n{font-size:1.5rem;font-weight:800;color:var(--navy);line-height:1;margin-bottom:4px}
+.ds-stat-l{font-size:.62rem;color:var(--g400);font-weight:600;letter-spacing:.04em}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:calc(var(--safe-b) + 80px);left:50%;transform:translateX(-50%) translateY(20px);background:var(--dark);color:#fff;padding:9px 18px;border-radius:22px;font-size:.78rem;font-weight:700;z-index:9999;opacity:0;pointer-events:none;white-space:nowrap;transition:opacity .2s,transform .2s;max-width:90vw}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── TOOLTIP ── */
+.rh-tip{position:fixed;z-index:99999;max-width:200px;background:#0F172A;color:#e2e8f0;font-size:.7rem;line-height:1.5;padding:7px 11px;border-radius:9px;box-shadow:0 8px 24px rgba(0,0,0,.4);pointer-events:none;opacity:0;transform:translateY(4px) scale(.96);transition:opacity .15s,transform .15s}
+.rh-tip.visible{opacity:1;transform:translateY(0) scale(1)}
+.rh-tip-title{font-weight:700;color:#fff;font-size:.73rem;margin-bottom:2px;display:block}
+
+/* ── UTIL ── */
+.dvd{height:1px;background:var(--g100);margin:4px 0}
+.set-item{display:flex;align-items:center;gap:12px;padding:13px 0;cursor:pointer}
+.set-ico{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.set-lbl{font-size:.85rem;font-weight:700;color:var(--dark)}
+.set-sub{font-size:.68rem;color:var(--g400);margin-top:1px}
+.set-arr{color:var(--g300);font-size:1.1rem;margin-left:auto}
+.prof-ava{width:64px;height:64px;border-radius:18px;background:var(--teal);display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:900;color:#fff;margin:0 auto 10px}
+.prof-name{font-size:1.05rem;font-weight:800;color:var(--dark);text-align:center}
+.prof-role{font-size:.72rem;color:var(--g400);text-align:center;margin-top:2px}
+
+@keyframes qsPop{from{opacity:0;transform:scale(.88)}to{opacity:1;transform:scale(1)}}
+.sev-btn{padding:10px 6px;border-radius:10px;border:2px solid var(--g200);background:var(--g50);font-size:.68rem;font-weight:800;cursor:pointer;font-family:var(--font);transition:border-color .15s,opacity .15s;animation:qsPop .25s cubic-bezier(.34,1.56,.64,1) both}
+.sev-btn.active-low{border-color:var(--green);background:#dcfce7;color:var(--green)}
+.sev-btn.active-medium{border-color:var(--amber);background:#fef3c7;color:#92400e}
+.sev-btn.active-high{border-color:var(--red);background:#fee2e2;color:var(--red)}
+.sev-btn.active-critical{border-color:var(--navy);background:var(--navy);color:#fff}
+
+
+/* ══════════════════════ ADMIN DESKTOP MODE ══════════════════════ */
+@media (min-width: 900px) {
+  body.desktop-mode #scr-admin-home {
+    flex-direction: row;
+    overflow: hidden;
+  }
+  body.desktop-mode #scr-admin-home .bnav { display: none; }
+  body.desktop-mode #scr-admin-home .app-hdr { display: none; }
+  body.desktop-mode #adm-sidebar {
+    display: flex !important;
+  }
+  body.desktop-mode #adm-main {
+    display: flex !important;
+  }
+}
+#adm-sidebar {
+  display: none;
+  width: 210px;
+  background: var(--navy);
+  flex-direction: column;
+  flex-shrink: 0;
+  padding: 0 0 16px;
+}
+#adm-main {
+  display: none;
+  flex: 1;
+  flex-direction: column;
+  overflow: hidden;
+}
+.adm-logo { padding: 18px 14px 12px; border-bottom: 1px solid rgba(255,255,255,.07); }
+.adm-logo-name { font-size: .98rem; font-weight: 900; color: #fff; }
+.adm-logo-name em { color: var(--teal); font-style: normal; }
+.adm-logo-sub { font-size: .62rem; color: rgba(255,255,255,.3); margin-top: 2px; }
+.adm-nav { flex: 1; overflow-y: auto; padding: 6px 0; }
+.adm-nav-sec { padding: 10px 14px 3px; font-size: .58rem; font-weight: 800; color: rgba(255,255,255,.25); letter-spacing: .1em; text-transform: uppercase; }
+.adm-nav-item { display: flex; align-items: center; gap: 8px; padding: 9px 14px; font-size: .78rem; font-weight: 700; color: rgba(255,255,255,.5); cursor: pointer; transition: background .1s, color .1s; }
+.adm-nav-item.active, .adm-nav-item:hover { background: rgba(255,255,255,.07); color: #fff; }
+.adm-nav-item.active { border-left: 3px solid var(--teal); }
+.adm-topbar { display: flex; align-items: center; gap: 10px; padding: 12px 18px; background: #fff; border-bottom: 1px solid var(--g200); flex-shrink: 0; }
+.adm-topbar-title { font-size: .95rem; font-weight: 800; color: var(--navy); flex: 1; }
+.adm-topbar-time { font-size: .72rem; color: var(--g400); font-family: var(--mono); }
+.adm-content { flex: 1; overflow-y: auto; padding: 14px 16px 20px; background: var(--g50); }
+.adm-panels .adm-panel { display: none; }
+.adm-panels .adm-panel.active { display: block; }
+.adm-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.adm-grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+.adm-card { background: #fff; border-radius: 12px; border: 1px solid var(--g200); overflow: hidden; margin-bottom: 14px; }
+.adm-card-hdr { padding: 10px 14px; background: var(--navy); }
+.adm-card-title { font-size: .78rem; font-weight: 800; color: #fff; }
+.adm-card-sub { font-size: .62rem; color: rgba(255,255,255,.4); margin-top: 2px; }
+.adm-card-body { padding: 12px 14px; }
+.adm-tbl { width: 100%; border-collapse: collapse; font-size: .76rem; }
+.adm-tbl th { text-align: left; padding: 7px 10px; font-size: .62rem; font-weight: 800; color: rgba(255,255,255,.55); background: var(--navy); letter-spacing: .06em; }
+.adm-tbl td { padding: 8px 10px; border-bottom: 1px solid var(--g100); color: var(--g700); }
+.adm-tbl tr:hover td { background: var(--g50); }
+.adm-stats { display: grid; grid-template-columns: repeat(6,1fr); gap: 10px; margin-bottom: 14px; }
+.adm-stat { background: #fff; border-radius: 10px; padding: 10px 6px; text-align: center; border: 1px solid var(--g200); }
+.adm-stat-n { font-size: 1.4rem; font-weight: 800; color: var(--navy); line-height: 1; margin-bottom: 3px; }
+.adm-stat-l { font-size: .6rem; color: var(--g400); font-weight: 600; }
+.adm-user-row { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-top: 1px solid rgba(255,255,255,.07); margin-top: auto; }
+.adm-user-ava { width: 32px; height: 32px; border-radius: 9px; background: var(--teal); display: flex; align-items: center; justify-content: center; font-weight: 800; color: #fff; font-size: .85rem; flex-shrink: 0; }
+.adm-user-name { font-size: .75rem; font-weight: 700; color: rgba(255,255,255,.7); }
+.adm-user-role { font-size: .6rem; color: rgba(255,255,255,.35); }
+</style>
+</head>
+<body>
+<div id="app">
+<div id="toast"></div>
+<div id="rh-tip" class="rh-tip"></div>
+
+<!-- ═══════════════════════════════════ SPLASH ═══════════════════════════════════ -->
+<div id="scr-splash" class="screen active">
+  <div class="splash-logo" style="text-align:center;padding:0 20px">
+    <div style="width:72px;height:72px;background:var(--teal);border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 16px">🛏</div>
+    <div style="font-size:2.2rem;font-weight:900;color:#fff;letter-spacing:-.03em">Bed<em style="color:var(--teal);font-style:normal">Sync</em></div>
+    <div style="font-size:.85rem;color:rgba(255,255,255,.5);margin-top:6px;font-weight:500">Hospital Bed & Services Management</div>
+    <div style="font-size:.72rem;color:rgba(255,255,255,.3);margin-top:4px">VitalGrid Health Ltd</div>
+    <div style="width:200px;margin:32px auto 0;background:rgba(255,255,255,.1);border-radius:4px;overflow:hidden">
+      <div class="splash-bar" style="width:0"></div>
+    </div>
+    <div style="font-size:.65rem;color:rgba(255,255,255,.25);margin-top:12px">Connecting Healthcare Systems</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ LOGIN ═══════════════════════════════════ -->
+<div id="scr-login" class="screen">
+  <div style="padding:calc(var(--safe-t)+24px) 20px 20px;flex-shrink:0">
+    <div style="font-size:1.8rem;font-weight:900;color:#fff">Bed<em style="color:var(--teal);font-style:normal">Sync</em></div>
+    <div style="font-size:.82rem;color:rgba(255,255,255,.45);margin-top:4px">Hospital Management System</div>
+  </div>
+  <div class="login-card">
+    <div style="font-size:1.1rem;font-weight:800;color:var(--navy);margin-bottom:4px">Sign In</div>
+    <div style="font-size:.75rem;color:var(--g400);margin-bottom:20px">Enter your hospital email and password</div>
+    <div class="fg"><label class="fl">Email Address</label><input class="fi" id="li-email" type="email" placeholder="you@hospital.gov.gh" autocomplete="email"></div>
+    <div class="fg"><label class="fl">Password</label>
+      <div style="position:relative;display:flex;align-items:center">
+        <input class="fi" id="li-pass" type="password" placeholder="••••••" autocomplete="current-password" style="padding-right:44px;width:100%">
+        <button type="button" onclick="togglePwd('li-pass',this)" style="position:absolute;right:12px;background:none;border:none;cursor:pointer;color:var(--g400);font-size:.95rem">👁</button>
+      </div>
+    </div>
+    <div style="font-size:.7rem;color:var(--g400);margin-bottom:16px">Default password: <strong style="font-family:var(--mono);color:var(--navy)">000000</strong></div>
+    <button class="btn btn-teal" onclick="doLogin()">Sign In →</button>
+    <button class="btn btn-ghost mt8" onclick="goScreen('register')" style="font-size:.8rem;padding:10px">Register New Account</button>
+    <div style="height:1px;background:var(--g100);margin:16px 0"></div>
+    <button class="btn btn-ghost" onclick="goScreen('incident-public')" style="font-size:.78rem;padding:10px;color:var(--red);border-color:var(--red)">⚠️ Report Clinical Incident (Anonymous)</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ REGISTER ═══════════════════════════════════ -->
+<div id="scr-register" class="screen">
+  <div class="app-hdr">
+    <div class="hdr-row"><div class="hdr-logo"><div class="hdr-dot">🛏</div><div class="hdr-brand">Bed<em>Sync</em></div></div><button onclick="goScreen('login')" style="background:rgba(255,255,255,.1);color:#fff;border:none;padding:6px 12px;border-radius:8px;font-weight:700;font-size:.72rem;cursor:pointer">← Back</button></div>
+    <div class="hdr-title">Create Account</div>
+  </div>
+  <div class="scroll">
+    <div class="card">
+      <div class="fg"><label class="fl">Full Name</label><input class="fi" id="rg-name" type="text" placeholder="Your full name"></div>
+      <div class="fg"><label class="fl">Work Email</label><input class="fi" id="rg-email" type="email" placeholder="you@hospital.gov.gh"></div>
+      <div class="fg"><label class="fl">Staff ID (optional)</label><input class="fi" id="rg-staffid" type="text" placeholder="e.g. GHS-2024-0042"></div>
+      <div class="fg"><label class="fl">Role</label>
+        <select class="fi" id="rg-role">
+          <option value="">— Select your role —</option>
+          <option value="nurse">Nurse / Health Worker</option>
+          <option value="admin">Hospital Administrator</option>
+          <option value="ghs">Ghana Health Service Officer</option>
+        </select>
+      </div>
+      <div class="fg"><label class="fl">Hospital / Facility</label><input class="fi" id="rg-hospital" type="text" placeholder="e.g. Korle Bu Teaching Hospital"></div>
+      <div class="fg" id="rg-ward-row"><label class="fl">Ward / Unit</label>
+        <select class="fi" id="rg-ward">
+          <option value="">— Select your ward —</option>
+          <option>Emergency / A&E</option><option>ICU / Intensive Care</option>
+          <option>General Ward (Male)</option><option>General Ward (Female)</option>
+          <option>Maternity / Labour</option><option>Paediatric Ward</option>
+          <option>Surgical Ward</option><option>Medical Ward</option>
+          <option>Orthopaedic Ward</option><option>Psychiatric Ward</option>
+          <option>Burns Unit</option><option>Private Ward</option><option>Other</option>
+        </select>
+      </div>
+      <div class="fg"><label class="fl">Password</label>
+        <div style="position:relative;display:flex;align-items:center">
+          <input class="fi" id="rg-pass" type="password" placeholder="Min 6 characters" style="padding-right:44px;width:100%">
+          <button type="button" onclick="togglePwd('rg-pass',this)" style="position:absolute;right:12px;background:none;border:none;cursor:pointer;color:var(--g400);font-size:.95rem">👁</button>
+        </div>
+      </div>
+      <div style="font-size:.7rem;color:var(--g400);margin-bottom:12px">Default password is <strong style="font-family:var(--mono);color:var(--navy)">000000</strong> — change after first login.</div>
+      <button class="btn btn-teal" onclick="doRegister()">Create Account →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ PUBLIC INCIDENT REPORT ═══════════════════════════════════ -->
+<div id="scr-incident-public" class="screen">
+  <div class="app-hdr">
+    <div class="hdr-row"><div class="hdr-logo"><div class="hdr-dot" style="background:var(--red)">⚠️</div><div class="hdr-brand">Bed<em>Sync</em></div></div><button onclick="goScreen('login')" style="background:rgba(255,255,255,.1);color:#fff;border:none;padding:6px 12px;border-radius:8px;font-weight:700;font-size:.72rem;cursor:pointer">← Back</button></div>
+    <div class="hdr-sub">Clinical Incident Reporting Portal</div>
+    <div class="hdr-title">Report an Incident</div>
+  </div>
+  <div class="scroll">
+    <div class="ab a"><span class="ab-ico">🔒</span><div><div class="ab-title">Confidential & Protected</div><div class="ab-body">Reports are confidential. You may submit anonymously. Anonymous reports are processed with equal urgency. No retaliation is permitted under GHS policy.</div></div></div>
+    <div class="card">
+      <div class="card-title">Your Identity</div>
+      <div class="anon-toggle" id="anon-toggle" onclick="toggleAnon()">
+        <div style="flex:1"><div style="font-size:.82rem;font-weight:700;color:var(--dark)">Submit Anonymously</div><div style="font-size:.65rem;color:var(--g400)">Your identity will not be recorded</div></div>
+        <button class="tog on" id="anon-tog" style="pointer-events:none"></button>
+      </div>
+      <div id="identity-fields" style="display:none">
+        <div class="fg"><label class="fl">Your Name</label><input class="fi" id="inc-name" type="text" placeholder="Optional — leave blank to stay anonymous"></div>
+        <div class="fg"><label class="fl">Staff ID</label><input class="fi" id="inc-staffid" type="text" placeholder="e.g. GHS-2024-0042"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Incident Details</div>
+      <div class="fg"><label class="fl">Incident Type</label>
+        <select class="fi" id="inc-type">
+          <option value="">— Select incident type —</option>
+          <option>Medication Error</option><option>Patient Fall</option>
+          <option>Wrong Patient / Wrong Procedure</option><option>Equipment Failure</option>
+          <option>Infection Control Breach</option><option>Communication Failure</option>
+          <option>Documentation Error</option><option>Patient Complaint</option>
+          <option>Staff Injury / Needlestick</option><option>Near Miss</option>
+          <option>Adverse Drug Reaction</option><option>Surgical Complication</option>
+          <option>Delayed Treatment</option><option>Security Incident</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="fg"><label class="fl">Severity</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px">
+          <button class="sev-btn" onclick="setSev('low',this)">🟡 Low</button>
+          <button class="sev-btn" onclick="setSev('medium',this)">🟠 Medium</button>
+          <button class="sev-btn" onclick="setSev('high',this)">🔴 High</button>
+          <button class="sev-btn" onclick="setSev('critical',this)">🚨 Critical</button>
+        </div>
+      </div>
+      <div class="fg"><label class="fl">Date &amp; Time of Incident</label><input class="fi" id="inc-datetime" type="datetime-local"></div>
+      <div class="fg"><label class="fl">Ward / Location</label><input class="fi" id="inc-loc" type="text" placeholder="e.g. ICU Ward B, Radiology Dept"></div>
+      <div class="fg"><label class="fl">Hospital / Facility</label><input class="fi" id="inc-hospital" type="text" placeholder="e.g. Korle Bu Teaching Hospital"></div>
+      <div class="fg"><label class="fl">What Happened</label><textarea class="fi" id="inc-desc" rows="5" placeholder="Describe the incident clearly. Include what happened, who was involved (no patient names), and what the immediate outcome was."></textarea></div>
+      <div class="fg"><label class="fl">Immediate Actions Taken</label><textarea class="fi" id="inc-actions" rows="3" placeholder="What was done immediately after the incident was identified?"></textarea></div>
+      <div class="fg"><label class="fl">Suggested Prevention</label><textarea class="fi" id="inc-prevention" rows="3" placeholder="How could this be prevented in future? Optional."></textarea></div>
+      <button class="btn btn-red mt12" onclick="submitIncident()">⚠️ Submit Incident Report</button>
+      <div style="font-size:.68rem;color:var(--g400);text-align:center;margin-top:8px">Your report is encrypted and stored securely. Only authorised administrators can view reports.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ NURSE — HOME ═══════════════════════════════════ -->
+<div id="scr-nurse-home" class="screen">
+  <div class="app-hdr">
+    <div class="hdr-row">
+      <div class="hdr-logo"><div class="hdr-dot">🛏</div><div class="hdr-brand">Bed<em>Sync</em></div></div>
+      <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+    </div>
+    <div class="hdr-sub" id="nh-ward-name">Loading...</div>
+    <div class="hdr-title" id="nh-hosp-name">Hospital Dashboard</div>
+  </div>
+  <div class="scroll" id="nurse-home-scroll">
+    <!-- Quick stats -->
+    <div class="stats-row" id="nh-stats">
+      <div class="stat-box"><div class="stat-n green" id="nh-avail">—</div><div class="stat-l">Available</div></div>
+      <div class="stat-box"><div class="stat-n red"   id="nh-occup">—</div><div class="stat-l">Occupied</div></div>
+      <div class="stat-box"><div class="stat-n amber" id="nh-maint">—</div><div class="stat-l">Maintenance</div></div>
+    </div>
+    <!-- Utilisation meter -->
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-hdr"><span class="card-title">My Ward — <span id="nh-ward-label">All Wards</span></span><span style="font-size:.7rem;color:var(--g400)" id="nh-util-pct">—% occupied</span></div>
+      <div class="meter" style="height:10px"><div class="meter-fill g" id="nh-util-bar" style="width:0%"></div></div>
+    </div>
+    <!-- All wards summary -->
+    <div id="nh-wards-list"></div>
+    <!-- Quick actions -->
+    <div class="card">
+      <div class="card-title">Quick Actions</div>
+      <button class="btn btn-teal" onclick="goScreen('nurse-update')">🛏 Update Bed Counts</button>
+      <button class="btn btn-ghost mt8" onclick="goScreen('nurse-services')">⚙️ Update Services Status</button>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
+        <button class="btn btn-red" onclick="goScreen('nurse-incident')" style="font-size:.75rem;padding:10px">⚠️ Report Incident</button>
+        <button class="btn" onclick="goScreen('nurse-fault')" style="font-size:.75rem;padding:10px;background:#fff3cd;color:#92400e;border:1.5px solid #fbbf24">🔧 Report Fault</button>
+      </div>
+    </div>
+  </div>
+  <div class="bnav">
+    <div class="bni active" onclick="goScreen('nurse-home')"><div class="bni-ico">🏠</div>Home<div class="bni-dot"></div></div>
+    <div class="bni" onclick="goScreen('nurse-update')"><div class="bni-ico">🛏</div>Beds</div>
+    <div class="bni" onclick="goScreen('nurse-services')"><div class="bni-ico">⚙️</div>Services</div>
+    <div class="bni" onclick="goScreen('nurse-incident')"><div class="bni-ico">⚠️</div>Incident</div>
+    <div class="bni" onclick="goScreen('nurse-profile')"><div class="bni-ico">👤</div>Profile</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ NURSE — BED UPDATE ═══════════════════════════════════ -->
+<div id="scr-nurse-update" class="screen">
+  <div class="app-hdr">
+    <div class="hdr-row"><div class="hdr-logo"><div class="hdr-dot">🛏</div><div class="hdr-brand">Bed<em>Sync</em></div></div><button onclick="goScreen('nurse-home')" style="background:rgba(255,255,255,.1);color:#fff;border:none;padding:6px 12px;border-radius:8px;font-weight:700;font-size:.72rem;cursor:pointer">← Back</button></div>
+    <div class="hdr-sub" id="nu-ward-sub">Select a ward to update</div>
+    <div class="hdr-title">Bed Count Update</div>
+  </div>
+  <div class="scroll">
+    <div class="fg"><label class="fl">Ward / Unit</label>
+      <select class="fi" id="nu-ward-select" onchange="nuLoadWard(this.value)">
+        <option value="">— Select ward —</option>
+      </select>
+    </div>
+    <div id="nu-ward-form" style="display:none">
+      <div class="card">
+        <div class="card-title">Bed Status</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div>
+            <div style="font-size:.7rem;font-weight:700;color:var(--green);margin-bottom:6px">🟢 AVAILABLE</div>
+            <div class="stepper"><button class="step-btn" onclick="stepBed('available',-1)">−</button><div class="step-val" id="sv-available">0</div><button class="step-btn" onclick="stepBed('available',1)">+</button></div>
+          </div>
+          <div>
+            <div style="font-size:.7rem;font-weight:700;color:var(--red);margin-bottom:6px">🔴 OCCUPIED</div>
+            <div class="stepper"><button class="step-btn" onclick="stepBed('occupied',-1)">−</button><div class="step-val" id="sv-occupied">0</div><button class="step-btn" onclick="stepBed('occupied',1)">+</button></div>
+          </div>
+          <div>
+            <div style="font-size:.7rem;font-weight:700;color:var(--amber);margin-bottom:6px">🟡 MAINTENANCE</div>
+            <div class="stepper"><button class="step-btn" onclick="stepBed('maintenance',-1)">−</button><div class="step-val" id="sv-maintenance">0</div><button class="step-btn" onclick="stepBed('maintenance',1)">+</button></div>
+          </div>
+          <div>
+            <div style="font-size:.7rem;font-weight:700;color:var(--purple);margin-bottom:6px">🟣 QUARANTINE</div>
+            <div class="stepper"><button class="step-btn" onclick="stepBed('quarantine',-1)">−</button><div class="step-val" id="sv-quarantine">0</div><button class="step-btn" onclick="stepBed('quarantine',1)">+</button></div>
+          </div>
+        </div>
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--g100);display:flex;justify-content:space-between;font-size:.78rem;color:var(--g500)">
+          <span>Total Beds: <strong id="sv-total" style="color:var(--navy)">0</strong></span>
+          <span>Utilisation: <strong id="sv-util" style="color:var(--red)">0%</strong></span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Notes</div>
+        <textarea class="fi" id="nu-notes" rows="3" placeholder="Any additional notes for this ward — staffing issues, supply shortages, special cases..."></textarea>
+      </div>
+      <button class="btn btn-teal" onclick="nuPublish()">📡 Publish Ward Update</button>
+    </div>
+  </div>
+  <div class="bnav">
+    <div class="bni" onclick="goScreen('nurse-home')"><div class="bni-ico">🏠</div>Home</div>
+    <div class="bni active" onclick="goScreen('nurse-update')"><div class="bni-ico">🛏</div>Beds<div class="bni-dot"></div></div>
+    <div class="bni" onclick="goScreen('nurse-services')"><div class="bni-ico">⚙️</div>Services</div>
+    <div class="bni" onclick="goScreen('nurse-incident')"><div class="bni-ico">⚠️</div>Incident</div>
+    <div class="bni" onclick="goScreen('nurse-profile')"><div class="bni-ico">👤</div>Profile</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ NURSE — SERVICES ═══════════════════════════════════ -->
+<div id="scr-nurse-services" class="screen">
+  <div class="app-hdr">
+    <div class="hdr-row"><div class="hdr-logo"><div class="hdr-dot">⚙️</div><div class="hdr-brand">Bed<em>Sync</em></div></div><button onclick="goScreen('nurse-home')" style="background:rgba(255,255,255,.1);color:#fff;border:none;padding:6px 12px;border-radius:8px;font-weight:700;font-size:.72rem;cursor:pointer">← Back</button></div>
+    <div class="hdr-title">Services Status</div>
+  </div>
+  <div class="scroll">
+    <div class="ab a" style="margin-bottom:10px"><span class="ab-ico">💡</span><div><div class="ab-title">Tap to cycle status</div><div class="ab-body">Operational → Maintenance → Offline. Updates are visible to all roles within 2 seconds.</div></div></div>
+    <div class="card" id="ns-services-list"></div>
+    <button class="btn btn-teal mt12" onclick="nsPublishServices()">📡 Publish Services Update</button>
+  </div>
+  <div class="bnav">
+    <div class="bni" onclick="goScreen('nurse-home')"><div class="bni-ico">🏠</div>Home</div>
+    <div class="bni" onclick="goScreen('nurse-update')"><div class="bni-ico">🛏</div>Beds</div>
+    <div class="bni active" onclick="goScreen('nurse-services')"><div class="bni-ico">⚙️</div>Services<div class="bni-dot"></div></div>
+    <div class="bni" onclick="goScreen('nurse-incident')"><div class="bni-ico">⚠️</div>Incident</div>
+    <div class="bni" onclick="goScreen('nurse-profile')"><div class="bni-ico">👤</div>Profile</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ NURSE — INCIDENT ═══════════════════════════════════ -->
+<div id="scr-nurse-incident" class="screen">
+  <div class="app-hdr">
+    <div class="hdr-row"><div class="hdr-logo"><div class="hdr-dot" style="background:var(--red)">⚠️</div><div class="hdr-brand">Bed<em>Sync</em></div></div><button onclick="goScreen('nurse-home')" style="background:rgba(255,255,255,.1);color:#fff;border:none;padding:6px 12px;border-radius:8px;font-weight:700;font-size:.72rem;cursor:pointer">← Back</button></div>
+    <div class="hdr-sub">Clinical Incident Reporting</div>
+    <div class="hdr-title">Report Incident</div>
+  </div>
+  <div class="scroll">
+    <div class="ab g" style="margin-bottom:10px"><span class="ab-ico">🔒</span><div><div class="ab-title">Protected Report</div><div class="ab-body">Your report is confidential. Toggle anonymous mode if preferred. No retaliation under GHS policy.</div></div></div>
+    <div class="card">
+      <div class="card-title">Identity</div>
+      <div class="anon-toggle" id="ni-anon-toggle" onclick="toggleNurseAnon()">
+        <div style="flex:1"><div style="font-size:.82rem;font-weight:700;color:var(--dark)">Submit Anonymously</div><div style="font-size:.65rem;color:var(--g400)">Your name and ID will not be recorded</div></div>
+        <button class="tog" id="ni-anon-tog" style="pointer-events:none"></button>
+      </div>
+      <div id="ni-identity-fields">
+        <div style="font-size:.8rem;color:var(--g500);padding:8px 0">Filing as: <strong id="ni-staff-display" style="color:var(--navy)">—</strong></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Incident Details</div>
+      <div class="fg"><label class="fl">Incident Type</label>
+        <select class="fi" id="ni-type">
+          <option value="">— Select incident type —</option>
+          <option>Medication Error</option><option>Patient Fall</option>
+          <option>Wrong Patient / Wrong Procedure</option><option>Equipment Failure</option>
+          <option>Infection Control Breach</option><option>Communication Failure</option>
+          <option>Documentation Error</option><option>Patient Complaint</option>
+          <option>Staff Injury / Needlestick</option><option>Near Miss</option>
+          <option>Adverse Drug Reaction</option><option>Surgical Complication</option>
+          <option>Delayed Treatment</option><option>Security Incident</option><option>Other</option>
+        </select>
+      </div>
+      <div class="fg"><label class="fl">Severity</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px">
+          <button class="sev-btn" id="ni-sev-low"      onclick="setNiSev('low',this)">🟡 Low</button>
+          <button class="sev-btn" id="ni-sev-medium"   onclick="setNiSev('medium',this)">🟠 Medium</button>
+          <button class="sev-btn" id="ni-sev-high"     onclick="setNiSev('high',this)">🔴 High</button>
+          <button class="sev-btn" id="ni-sev-critical" onclick="setNiSev('critical',this)">🚨 Critical</button>
+        </div>
+      </div>
+      <div class="fg"><label class="fl">Date &amp; Time</label><input class="fi" id="ni-datetime" type="datetime-local"></div>
+      <div class="fg"><label class="fl">Ward / Location</label><input class="fi" id="ni-loc" type="text" placeholder="Your current ward or specify location"></div>
+      <div class="fg"><label class="fl">What Happened</label><textarea class="fi" id="ni-desc" rows="5" placeholder="Describe clearly what happened — no patient names or IDs."></textarea></div>
+      <div class="fg"><label class="fl">Immediate Actions Taken</label><textarea class="fi" id="ni-actions" rows="3" placeholder="What was done immediately?"></textarea></div>
+      <div class="fg"><label class="fl">Suggested Prevention</label><textarea class="fi" id="ni-prevention" rows="2" placeholder="Optional — how could this be prevented?"></textarea></div>
+      <button class="btn btn-red mt12" onclick="submitNurseIncident()">⚠️ Submit Incident Report</button>
+    </div>
+  </div>
+  <div class="bnav">
+    <div class="bni" onclick="goScreen('nurse-home')"><div class="bni-ico">🏠</div>Home</div>
+    <div class="bni" onclick="goScreen('nurse-update')"><div class="bni-ico">🛏</div>Beds</div>
+    <div class="bni" onclick="goScreen('nurse-services')"><div class="bni-ico">⚙️</div>Services</div>
+    <div class="bni active" onclick="goScreen('nurse-incident')"><div class="bni-ico">⚠️</div>Incident<div class="bni-dot"></div></div>
+    <div class="bni" onclick="goScreen('nurse-profile')"><div class="bni-ico">👤</div>Profile</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ NURSE — FAULT ═══════════════════════════════════ -->
+<div id="scr-nurse-fault" class="screen">
+  <div class="app-hdr">
+    <div class="hdr-row"><div class="hdr-logo"><div class="hdr-dot" style="background:var(--amber)">🔧</div><div class="hdr-brand">Bed<em>Sync</em></div></div><button onclick="goScreen('nurse-home')" style="background:rgba(255,255,255,.1);color:#fff;border:none;padding:6px 12px;border-radius:8px;font-weight:700;font-size:.72rem;cursor:pointer">← Back</button></div>
+    <div class="hdr-title">Equipment Fault Report</div>
+  </div>
+  <div class="scroll">
+    <div class="card">
+      <div class="card-title">Report Faulty Equipment</div>
+      <div class="fg"><label class="fl">Equipment / Service</label>
+        <select class="fi" id="nf-equip">
+          <option value="">— Select equipment —</option>
+          <option>CT Scanner</option><option>MRI Scanner</option><option>X-Ray Machine</option>
+          <option>Ultrasound</option><option>Operating Theatre 1</option><option>Operating Theatre 2</option>
+          <option>Blood Bank Refrigerator</option><option>Pharmacy</option><option>Laboratory Equipment</option>
+          <option>Oxygen Supply System</option><option>Generator / Backup Power</option>
+          <option>Ambulance / Vehicle</option><option>Bed / Furniture</option>
+          <option>IV Pump</option><option>Ventilator</option><option>Defibrillator</option>
+          <option>Other (describe below)</option>
+        </select>
+      </div>
+      <div class="fg"><label class="fl">Severity</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+          <button class="sev-btn" onclick="setFaultSev('low',this)">🟡 Low</button>
+          <button class="sev-btn" onclick="setFaultSev('medium',this)">🟠 Medium</button>
+          <button class="sev-btn" onclick="setFaultSev('high',this)">🔴 High</button>
+        </div>
+      </div>
+      <div class="fg"><label class="fl">Description of Fault</label><textarea class="fi" id="nf-desc" rows="4" placeholder="Describe the fault clearly. Include any error messages or codes, when it started, and whether it is affecting patient care."></textarea></div>
+      <div class="fg"><label class="fl">Location / Ward</label><input class="fi" id="nf-loc" type="text" placeholder="e.g. Radiology Department, Floor 2"></div>
+      <button class="btn btn-gold mt12" onclick="submitFault()">🔧 Submit Fault Report</button>
+    </div>
+    <div class="card">
+      <div class="card-title">Open Faults — This Hospital</div>
+      <div id="nf-open-list"><div style="text-align:center;padding:14px;color:var(--g400);font-size:.8rem">No open faults</div></div>
+    </div>
+  </div>
+  <div class="bnav">
+    <div class="bni" onclick="goScreen('nurse-home')"><div class="bni-ico">🏠</div>Home</div>
+    <div class="bni" onclick="goScreen('nurse-update')"><div class="bni-ico">🛏</div>Beds</div>
+    <div class="bni" onclick="goScreen('nurse-services')"><div class="bni-ico">⚙️</div>Services</div>
+    <div class="bni" onclick="goScreen('nurse-incident')"><div class="bni-ico">⚠️</div>Incident</div>
+    <div class="bni active" onclick="goScreen('nurse-profile')"><div class="bni-ico">👤</div>Profile</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ NURSE — PROFILE ═══════════════════════════════════ -->
+<div id="scr-nurse-profile" class="screen">
+  <div class="app-hdr">
+    <div class="hdr-row"><div class="hdr-logo"><div class="hdr-dot">👤</div><div class="hdr-brand">Bed<em>Sync</em></div></div></div>
+    <div class="hdr-title">Profile</div>
+  </div>
+  <div class="scroll">
+    <div class="card" style="text-align:center">
+      <div class="prof-ava" id="np-ava">N</div>
+      <div class="prof-name" id="np-name">—</div>
+      <div class="prof-role" id="np-role">Nurse / Health Worker</div>
+      <div style="font-size:.7rem;color:var(--g400);margin-top:4px" id="np-ward">—</div>
+      <div style="font-size:.7rem;color:var(--g400)" id="np-hosp">—</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Navigation</div>
+      <div class="set-item" onclick="goScreen('nurse-home')"><div class="set-ico" style="background:#dbeafe">🏠</div><div><div class="set-lbl">Dashboard</div><div class="set-sub">Ward overview</div></div><div class="set-arr">›</div></div>
+      <div class="dvd"></div>
+      <div class="set-item" onclick="goScreen('nurse-update')"><div class="set-ico" style="background:#dcfce7">🛏</div><div><div class="set-lbl">Bed Count Update</div><div class="set-sub">Update ward bed status</div></div><div class="set-arr">›</div></div>
+      <div class="dvd"></div>
+      <div class="set-item" onclick="goScreen('nurse-services')"><div class="set-ico" style="background:#f1f5f9">⚙️</div><div><div class="set-lbl">Services Status</div><div class="set-sub">Equipment &amp; services</div></div><div class="set-arr">›</div></div>
+      <div class="dvd"></div>
+      <div class="set-item" onclick="goScreen('nurse-incident')"><div class="set-ico" style="background:#fee2e2">⚠️</div><div><div class="set-lbl">Report Incident</div><div class="set-sub">Clinical incident reporting</div></div><div class="set-arr">›</div></div>
+      <div class="dvd"></div>
+      <div class="set-item" onclick="goScreen('nurse-fault')"><div class="set-ico" style="background:#fff3cd">🔧</div><div><div class="set-lbl">Report Fault</div><div class="set-sub">Equipment faults</div></div><div class="set-arr">›</div></div>
+    </div>
+    <button class="btn btn-ghost" onclick="doLogout()">🚪 Sign Out</button>
+  </div>
+  <div class="bnav">
+    <div class="bni" onclick="goScreen('nurse-home')"><div class="bni-ico">🏠</div>Home</div>
+    <div class="bni" onclick="goScreen('nurse-update')"><div class="bni-ico">🛏</div>Beds</div>
+    <div class="bni" onclick="goScreen('nurse-services')"><div class="bni-ico">⚙️</div>Services</div>
+    <div class="bni" onclick="goScreen('nurse-incident')"><div class="bni-ico">⚠️</div>Incident</div>
+    <div class="bni active" onclick="goScreen('nurse-profile')"><div class="bni-ico">👤</div>Profile<div class="bni-dot"></div></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ ADMIN — HOME ═══════════════════════════════════ -->
+<div id="scr-admin-home" class="screen">
+  <!-- Mobile header (hidden on desktop) -->
+  <div class="app-hdr" id="adm-mob-hdr">
+    <div class="hdr-row">
+      <div class="hdr-logo"><div class="hdr-dot">📊</div><div class="hdr-brand">Bed<em>Sync</em></div></div>
+      <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+    </div>
+    <div class="hdr-sub" id="ah-hosp-sub">Hospital Administration</div>
+    <div class="hdr-title" id="ah-hosp-name">Management Dashboard</div>
+  </div>
+  <!-- Desktop sidebar -->
+  <div id="adm-sidebar">
+    <div class="adm-logo">
+      <div class="adm-logo-name">Bed<em>Sync</em></div>
+      <div class="adm-logo-sub">VitalGrid Health Ltd</div>
+    </div>
+    <div class="adm-nav">
+      <div class="adm-nav-sec">Monitor</div>
+      <div class="adm-nav-item active" id="adm-nav-overview"   onclick="admPanel('overview')"><span>📊</span> Overview</div>
+      <div class="adm-nav-item"        id="adm-nav-beds"       onclick="admPanel('beds')"><span>🛏</span> Beds — All Wards</div>
+      <div class="adm-nav-item"        id="adm-nav-services"   onclick="admPanel('services')"><span>⚙️</span> Services</div>
+      <div class="adm-nav-item"        id="adm-nav-faults"     onclick="admPanel('faults')"><span>🔧</span> Fault Queue</div>
+      <div class="adm-nav-sec">Clinical</div>
+      <div class="adm-nav-item"        id="adm-nav-incidents"  onclick="admPanel('incidents')"><span>⚠️</span> Incidents <span id="adm-inc-badge" style="margin-left:auto;background:var(--red);color:#fff;font-size:.55rem;font-weight:800;padding:1px 6px;border-radius:10px">0</span></div>
+      <div class="adm-nav-sec">Reports</div>
+      <div class="adm-nav-item"        id="adm-nav-export"     onclick="admExportCSV()"><span>📄</span> Export CSV</div>
+    </div>
+    <div class="adm-user-row" id="adm-user-row">
+      <div class="adm-user-ava" id="adm-desk-ava">A</div>
+      <div><div class="adm-user-name" id="adm-desk-name">Administrator</div><div class="adm-user-role">Hospital Admin</div></div>
+      <button onclick="doLogout()" style="margin-left:auto;background:none;border:none;color:rgba(255,255,255,.3);cursor:pointer;font-size:1rem" title="Sign out">⏻</button>
+    </div>
+  </div>
+  <!-- Desktop main content -->
+  <div id="adm-main">
+    <div class="adm-topbar">
+      <div class="adm-topbar-title" id="adm-panel-title">Hospital Overview</div>
+      <div class="adm-topbar-time" id="adm-clock">--:--</div>
+      <button class="btn-teal" style="padding:6px 14px;border-radius:8px;border:none;font-size:.72rem;font-weight:700;color:#fff;cursor:pointer;font-family:inherit" onclick="loadAdminHome()">🔄 Refresh</button>
+    </div>
+    <div class="adm-content">
+      <div class="adm-panels">
+        <!-- Overview panel -->
+        <div class="adm-panel active" id="admp-overview">
+          <div class="adm-stats">
+            <div class="adm-stat"><div class="adm-stat-n" id="ds-ah-total" style="color:var(--teal)">—</div><div class="adm-stat-l">Total Beds</div></div>
+            <div class="adm-stat"><div class="adm-stat-n" id="ds-ah-avail" style="color:var(--green)">—</div><div class="adm-stat-l">Available</div></div>
+            <div class="adm-stat"><div class="adm-stat-n" id="ds-ah-occup" style="color:var(--red)">—</div><div class="adm-stat-l">Occupied</div></div>
+            <div class="adm-stat"><div class="adm-stat-n" id="ds-ah-maint" style="color:var(--amber)">—</div><div class="adm-stat-l">Maintenance</div></div>
+            <div class="adm-stat"><div class="adm-stat-n" id="ds-ah-util" style="color:var(--navy)">—</div><div class="adm-stat-l">Utilisation %</div></div>
+            <div class="adm-stat"><div class="adm-stat-n" id="ds-ah-inc" style="color:var(--red)">—</div><div class="adm-stat-l">Open Incidents</div></div>
+          </div>
+          <div class="adm-grid2">
+            <div>
+              <div class="adm-card">
+                <div class="adm-card-hdr"><div class="adm-card-title">🛏 All Wards — Live Status</div></div>
+                <table class="adm-tbl"><thead><tr><th>Ward</th><th>Available</th><th>Occupied</th><th>Maint.</th><th>Util.</th></tr></thead><tbody id="ds-wards-tbody"></tbody></table>
+              </div>
+              <div class="adm-card">
+                <div class="adm-card-hdr"><div class="adm-card-title">⚙️ Services Requiring Attention</div></div>
+                <div class="adm-card-body" id="ds-svc-issues"></div>
+              </div>
+            </div>
+            <div>
+              <div class="adm-card">
+                <div class="adm-card-hdr"><div class="adm-card-title">🚨 Active Alerts</div></div>
+                <div class="adm-card-body" id="ds-alerts-panel"></div>
+              </div>
+              <div class="adm-card">
+                <div class="adm-card-hdr"><div class="adm-card-title">⚠️ Recent Incidents</div></div>
+                <div class="adm-card-body" id="ds-inc-panel" style="max-height:300px;overflow-y:auto"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Beds panel -->
+        <div class="adm-panel" id="admp-beds">
+          <div class="adm-card">
+            <div class="adm-card-hdr"><div class="adm-card-title">🛏 Bed Management — All Wards</div><div class="adm-card-sub">Live ward-by-ward breakdown</div></div>
+            <table class="adm-tbl"><thead><tr><th>Ward</th><th>Available</th><th>Occupied</th><th>Maintenance</th><th>Quarantine</th><th>Total</th><th>Utilisation</th></tr></thead><tbody id="ds-beds-tbody"></tbody></table>
+          </div>
+        </div>
+        <!-- Services panel -->
+        <div class="adm-panel" id="admp-services">
+          <div class="adm-card">
+            <div class="adm-card-hdr"><div class="adm-card-title">⚙️ All Services & Equipment</div></div>
+            <table class="adm-tbl"><thead><tr><th>Service</th><th>Status</th><th>Notes</th></tr></thead><tbody id="ds-svc-tbody"></tbody></table>
+          </div>
+        </div>
+        <!-- Faults panel -->
+        <div class="adm-panel" id="admp-faults">
+          <div class="adm-card">
+            <div class="adm-card-hdr"><div class="adm-card-title">🔧 Open Fault Reports</div></div>
+            <div class="adm-card-body" id="ds-fault-panel"></div>
+          </div>
+        </div>
+        <!-- Incidents panel -->
+        <div class="adm-panel" id="admp-incidents">
+          <div class="adm-card">
+            <div class="adm-card-hdr"><div class="adm-card-title">⚠️ Clinical Incident Reports</div><div class="adm-card-sub">Anonymous reports de-identified · Confidential</div></div>
+            <div style="padding:10px 14px;border-bottom:1px solid var(--g100);display:flex;gap:10px">
+              <select id="ds-inc-type-f" onchange="admRenderIncidents()" style="flex:1;padding:6px 10px;border:1px solid var(--g200);border-radius:7px;font-family:inherit;font-size:.75rem">
+                <option value="">All Types</option>
+                <option>Medication Error</option><option>Patient Fall</option>
+                <option>Equipment Failure</option><option>Near Miss</option>
+                <option>Infection Control Breach</option><option>Communication Failure</option>
+              </select>
+              <select id="ds-inc-sev-f" onchange="admRenderIncidents()" style="flex:1;padding:6px 10px;border:1px solid var(--g200);border-radius:7px;font-family:inherit;font-size:.75rem">
+                <option value="">All Severities</option>
+                <option value="low">Low</option><option value="medium">Medium</option>
+                <option value="high">High</option><option value="critical">Critical</option>
+              </select>
+              <select id="ds-inc-stat-f" onchange="admRenderIncidents()" style="flex:1;padding:6px 10px;border:1px solid var(--g200);border-radius:7px;font-family:inherit;font-size:.75rem">
+                <option value="">All Statuses</option>
+                <option value="open">Open</option><option value="review">Under Review</option><option value="closed">Closed</option>
+              </select>
+            </div>
+            <div id="ds-inc-tbody" style="padding:0 14px 14px"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Mobile scroll (shown on mobile) -->
+  <div class="scroll" id="adm-mob-scroll">
+    <!-- 6 stats -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">
+      <div class="stat-box"><div class="stat-n teal" id="ah-total">—</div><div class="stat-l">Total Beds</div></div>
+      <div class="stat-box"><div class="stat-n green" id="ah-avail">—</div><div class="stat-l">Available</div></div>
+      <div class="stat-box"><div class="stat-n red"   id="ah-occup">—</div><div class="stat-l">Occupied</div></div>
+      <div class="stat-box"><div class="stat-n amber" id="ah-maint">—</div><div class="stat-l">Maintenance</div></div>
+      <div class="stat-box"><div class="stat-n navy"  id="ah-util">—%</div><div class="stat-l">Utilisation</div></div>
+      <div class="stat-box"><div class="stat-n red"   id="ah-incidents">—</div><div class="stat-l">Open Incidents</div></div>
+    </div>
+    <!-- Alerts -->
+    <div id="ah-alerts"></div>
+    <!-- Wards -->
+    <div class="card">
+      <div class="card-title">All Wards — Live Status</div>
+      <div id="ah-wards-table"></div>
+    </div>
+    <!-- Services with issues -->
+    <div class="card">
+      <div class="card-title">Services Requiring Attention</div>
+      <div id="ah-services-issues"></div>
+    </div>
+  </div>
+  </div><!-- /adm-mob-scroll -->
+  <div class="bnav" id="adm-mob-bnav">
+    <div class="bni active" onclick="goScreen('admin-home')"><div class="bni-ico">📊</div>Overview<div class="bni-dot"></div></div>
+    <div class="bni" onclick="goScreen('admin-beds')"><div class="bni-ico">🛏</div>Beds</div>
+    <div class="bni" onclick="goScreen('admin-services')"><div class="bni-ico">⚙️</div>Services</div>
+    <div class="bni" onclick="goScreen('admin-incidents')"><div class="bni-ico">⚠️</div>Incidents</div>
+    <div class="bni" onclick="goScreen('admin-profile')"><div class="bni-ico">👤</div>Profile</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ ADMIN — BEDS ═══════════════════════════════════ -->
+<div id="scr-admin-beds" class="screen">
+  <div class="app-hdr">
+    <div class="hdr-row"><div class="hdr-logo"><div class="hdr-dot">🛏</div><div class="hdr-brand">Bed<em>Sync</em></div></div></div>
+    <div class="hdr-title">Bed Management — All Wards</div>
+  </div>
+  <div class="scroll">
+    <div class="stats-row" style="grid-template-columns:1fr 1fr 1fr 1fr">
+      <div class="stat-box"><div class="stat-n green" id="ab-avail">—</div><div class="stat-l">Available</div></div>
+      <div class="stat-box"><div class="stat-n red"   id="ab-occup">—</div><div class="stat-l">Occupied</div></div>
+      <div class="stat-box"><div class="stat-n amber" id="ab-maint">—</div><div class="stat-l">Maintenance</div></div>
+      <div class="stat-box"><div class="stat-n navy"  id="ab-util">—%</div><div class="stat-l">Utilisation</div></div>
+    </div>
+    <div id="ab-wards-list"></div>
+  </div>
+  <div class="bnav">
+    <div class="bni" onclick="goScreen('admin-home')"><div class="bni-ico">📊</div>Overview</div>
+    <div class="bni active" onclick="goScreen('admin-beds')"><div class="bni-ico">🛏</div>Beds<div class="bni-dot"></div></div>
+    <div class="bni" onclick="goScreen('admin-services')"><div class="bni-ico">⚙️</div>Services</div>
+    <div class="bni" onclick="goScreen('admin-incidents')"><div class="bni-ico">⚠️</div>Incidents</div>
+    <div class="bni" onclick="goScreen('admin-profile')"><div class="bni-ico">👤</div>Profile</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ ADMIN — SERVICES ═══════════════════════════════════ -->
+<div id="scr-admin-services" class="screen">
+  <div class="app-hdr">
+    <div class="hdr-row"><div class="hdr-logo"><div class="hdr-dot">⚙️</div><div class="hdr-brand">Bed<em>Sync</em></div></div></div>
+    <div class="hdr-title">Services &amp; Maintenance</div>
+  </div>
+  <div class="scroll">
+    <div class="stats-row" style="grid-template-columns:1fr 1fr 1fr">
+      <div class="stat-box"><div class="stat-n green" id="as-oper">—</div><div class="stat-l">Operational</div></div>
+      <div class="stat-box"><div class="stat-n amber" id="as-maint">—</div><div class="stat-l">Maintenance</div></div>
+      <div class="stat-box"><div class="stat-n red"   id="as-off">—</div><div class="stat-l">Offline</div></div>
+    </div>
+    <div class="card" id="as-services-full"></div>
+    <div class="card">
+      <div class="card-title">Open Fault Reports</div>
+      <div id="as-faults-list"><div style="text-align:center;padding:14px;color:var(--g400);font-size:.8rem">No open fault reports</div></div>
+    </div>
+  </div>
+  <div class="bnav">
+    <div class="bni" onclick="goScreen('admin-home')"><div class="bni-ico">📊</div>Overview</div>
+    <div class="bni" onclick="goScreen('admin-beds')"><div class="bni-ico">🛏</div>Beds</div>
+    <div class="bni active" onclick="goScreen('admin-services')"><div class="bni-ico">⚙️</div>Services<div class="bni-dot"></div></div>
+    <div class="bni" onclick="goScreen('admin-incidents')"><div class="bni-ico">⚠️</div>Incidents</div>
+    <div class="bni" onclick="goScreen('admin-profile')"><div class="bni-ico">👤</div>Profile</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ ADMIN — INCIDENTS ═══════════════════════════════════ -->
+<div id="scr-admin-incidents" class="screen">
+  <div class="app-hdr">
+    <div class="hdr-row"><div class="hdr-logo"><div class="hdr-dot" style="background:var(--red)">⚠️</div><div class="hdr-brand">Bed<em>Sync</em></div></div></div>
+    <div class="hdr-title">Clinical Incidents</div>
+  </div>
+  <div class="scroll">
+    <div class="stats-row" style="grid-template-columns:1fr 1fr 1fr 1fr">
+      <div class="stat-box"><div class="stat-n red"   id="ai-open">—</div><div class="stat-l">Open</div></div>
+      <div class="stat-box"><div class="stat-n amber" id="ai-review">—</div><div class="stat-l">Under Review</div></div>
+      <div class="stat-box"><div class="stat-n green" id="ai-closed">—</div><div class="stat-l">Closed</div></div>
+      <div class="stat-box"><div class="stat-n navy"  id="ai-anon">—</div><div class="stat-l">Anonymous</div></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:10px">
+      <select class="fi" id="ai-filter-type" onchange="aiFilterIncidents()" style="flex:1">
+        <option value="">All Types</option>
+        <option>Medication Error</option><option>Patient Fall</option>
+        <option>Equipment Failure</option><option>Near Miss</option>
+        <option>Infection Control Breach</option>
+      </select>
+      <select class="fi" id="ai-filter-sev" onchange="aiFilterIncidents()" style="flex:1">
+        <option value="">All Severities</option>
+        <option value="low">Low</option><option value="medium">Medium</option>
+        <option value="high">High</option><option value="critical">Critical</option>
+      </select>
+    </div>
+    <div id="ai-incidents-list"></div>
+  </div>
+  <div class="bnav">
+    <div class="bni" onclick="goScreen('admin-home')"><div class="bni-ico">📊</div>Overview</div>
+    <div class="bni" onclick="goScreen('admin-beds')"><div class="bni-ico">🛏</div>Beds</div>
+    <div class="bni" onclick="goScreen('admin-services')"><div class="bni-ico">⚙️</div>Services</div>
+    <div class="bni active" onclick="goScreen('admin-incidents')"><div class="bni-ico">⚠️</div>Incidents<div class="bni-dot"></div></div>
+    <div class="bni" onclick="goScreen('admin-profile')"><div class="bni-ico">👤</div>Profile</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ ADMIN — PROFILE ═══════════════════════════════════ -->
+<div id="scr-admin-profile" class="screen">
+  <div class="app-hdr">
+    <div class="hdr-row"><div class="hdr-logo"><div class="hdr-dot">👤</div><div class="hdr-brand">Bed<em>Sync</em></div></div></div>
+    <div class="hdr-title">Administrator Profile</div>
+  </div>
+  <div class="scroll">
+    <div class="card" style="text-align:center">
+      <div class="prof-ava" id="adp-ava" style="background:var(--navy)">A</div>
+      <div class="prof-name" id="adp-name">—</div>
+      <div class="prof-role">Hospital Administrator</div>
+      <div style="font-size:.7rem;color:var(--g400);margin-top:4px" id="adp-hosp">—</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Navigation</div>
+      <div class="set-item" onclick="goScreen('admin-home')"><div class="set-ico" style="background:#dbeafe">📊</div><div><div class="set-lbl">Overview Dashboard</div><div class="set-sub">Hospital-wide status</div></div><div class="set-arr">›</div></div>
+      <div class="dvd"></div>
+      <div class="set-item" onclick="goScreen('admin-beds')"><div class="set-ico" style="background:#dcfce7">🛏</div><div><div class="set-lbl">Bed Management</div><div class="set-sub">All wards bed status</div></div><div class="set-arr">›</div></div>
+      <div class="dvd"></div>
+      <div class="set-item" onclick="goScreen('admin-services')"><div class="set-ico" style="background:#f1f5f9">⚙️</div><div><div class="set-lbl">Services &amp; Maintenance</div><div class="set-sub">Equipment status and faults</div></div><div class="set-arr">›</div></div>
+      <div class="dvd"></div>
+      <div class="set-item" onclick="goScreen('admin-incidents')"><div class="set-ico" style="background:#fee2e2">⚠️</div><div><div class="set-lbl">Clinical Incidents</div><div class="set-sub">All incident reports</div></div><div class="set-arr">›</div></div>
+    </div>
+    <button class="btn btn-ghost" onclick="doLogout()">🚪 Sign Out</button>
+  </div>
+  <div class="bnav">
+    <div class="bni" onclick="goScreen('admin-home')"><div class="bni-ico">📊</div>Overview</div>
+    <div class="bni" onclick="goScreen('admin-beds')"><div class="bni-ico">🛏</div>Beds</div>
+    <div class="bni" onclick="goScreen('admin-services')"><div class="bni-ico">⚙️</div>Services</div>
+    <div class="bni" onclick="goScreen('admin-incidents')"><div class="bni-ico">⚠️</div>Incidents</div>
+    <div class="bni active" onclick="goScreen('admin-profile')"><div class="bni-ico">👤</div>Profile<div class="bni-dot"></div></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ GHS — HOME ═══════════════════════════════════ -->
+<div id="scr-ghs-home" class="screen">
+  <div class="app-hdr">
+    <div class="hdr-row">
+      <div class="hdr-logo"><div class="hdr-dot" style="background:var(--gold)">🇬🇭</div><div class="hdr-brand">Bed<em>Sync</em></div></div>
+      <div class="live-badge"><div class="live-dot"></div>GHS OVERSIGHT</div>
+    </div>
+    <div class="hdr-sub">Ghana Health Service</div>
+    <div class="hdr-title">National Hospital Overview</div>
+  </div>
+  <div class="scroll">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">
+      <div class="stat-box"><div class="stat-n teal" id="gh-total">—</div><div class="stat-l">Total Beds</div></div>
+      <div class="stat-box"><div class="stat-n green" id="gh-avail">—</div><div class="stat-l">Available</div></div>
+      <div class="stat-box"><div class="stat-n red"   id="gh-occup">—</div><div class="stat-l">Occupied</div></div>
+      <div class="stat-box"><div class="stat-n amber" id="gh-maint">—</div><div class="stat-l">Maintenance</div></div>
+      <div class="stat-box"><div class="stat-n navy"  id="gh-util">—%</div><div class="stat-l">Network Utilisation</div></div>
+      <div class="stat-box"><div class="stat-n red"   id="gh-crit">—</div><div class="stat-l">Open Critical</div></div>
+    </div>
+    <div id="gh-alerts"></div>
+    <div class="card">
+      <div class="card-title">Ward Summary — All Facilities</div>
+      <div id="gh-wards-table"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Clinical Incidents — Network Summary</div>
+      <div id="gh-incidents-summary"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Services Requiring National Attention</div>
+      <div id="gh-services-issues"></div>
+    </div>
+  </div>
+  <div class="bnav">
+    <div class="bni active" onclick="goScreen('ghs-home')"><div class="bni-ico">🏠</div>Overview<div class="bni-dot"></div></div>
+    <div class="bni" onclick="goScreen('admin-incidents')" style="color:var(--g400)"><div class="bni-ico">⚠️</div>Incidents</div>
+    <div class="bni" onclick="goScreen('ghs-profile')"><div class="bni-ico">👤</div>Profile</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ GHS — PROFILE ═══════════════════════════════════ -->
+<div id="scr-ghs-profile" class="screen">
+  <div class="app-hdr">
+    <div class="hdr-row"><div class="hdr-logo"><div class="hdr-dot" style="background:var(--gold)">🇬🇭</div><div class="hdr-brand">Bed<em>Sync</em></div></div></div>
+    <div class="hdr-title">GHS Officer Profile</div>
+  </div>
+  <div class="scroll">
+    <div class="card" style="text-align:center">
+      <div class="prof-ava" id="ghp-ava" style="background:var(--gold)">G</div>
+      <div class="prof-name" id="ghp-name">—</div>
+      <div class="prof-role" style="color:var(--gold)">Ghana Health Service Officer</div>
+      <div style="font-size:.7rem;color:var(--g400);margin-top:4px" id="ghp-region">—</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Access Level</div>
+      <div class="ab g" style="margin-bottom:0"><span class="ab-ico">✅</span><div><div class="ab-title">Full Read Access</div><div class="ab-body">You have read access to all hospital data, all wards, all services, and all incident reports. Incident reports visible to GHS are de-identified where anonymous.</div></div></div>
+    </div>
+    <button class="btn btn-ghost mt12" onclick="doLogout()">🚪 Sign Out</button>
+  </div>
+  <div class="bnav">
+    <div class="bni" onclick="goScreen('ghs-home')"><div class="bni-ico">🏠</div>Overview</div>
+    <div class="bni" onclick="goScreen('admin-incidents')"><div class="bni-ico">⚠️</div>Incidents</div>
+    <div class="bni active" onclick="goScreen('ghs-profile')"><div class="bni-ico">👤</div>Profile<div class="bni-dot"></div></div>
+  </div>
+</div>
+
+</div><!-- /#app -->
+<script>
+// ═══════════════════════════════════════════════════════════
+// BEDSYNC — VitalGrid Health Ltd
+// Hospital Bed & Services Management System + CIRS
+// ═══════════════════════════════════════════════════════════
+
+// ── FIREBASE CONFIG — BedSync by VitalGrid Health Ltd ──
+// Project: bedsync-46d3e (europe-west1) — dedicated BedSync project
+const FB_URL         = 'https://bedsync-46d3e-default-rtdb.europe-west1.firebasedatabase.app';
+const FB_KEY         = 'AIzaSyA-AXuQGmgmm8SLjeyXTSshgKbf0FTJCQ8';
+const FB_AUTH_DOMAIN = 'bedsync-46d3e.firebaseapp.com';
+const FB_PROJECT_ID  = 'bedsync-46d3e';
+const FB_APP_ID      = '1:833235923337:web:c14a133ba99bd0dc6df158';
+const FB_SENDER_ID   = '833235923337';
+
+// ── DEMO DATA ──
+let wards    = [{"id": "emergency", "name": "Emergency / A&E", "ico": "🚨", "total": 24, "available": 8, "occupied": 14, "maintenance": 2, "quarantine": 0}, {"id": "icu", "name": "ICU / Intensive Care", "ico": "🫁", "total": 12, "available": 3, "occupied": 8, "maintenance": 1, "quarantine": 0}, {"id": "general_m", "name": "General Ward (Male)", "ico": "🛏", "total": 40, "available": 15, "occupied": 22, "maintenance": 3, "quarantine": 0}, {"id": "general_f", "name": "General Ward (Female)", "ico": "🛏", "total": 36, "available": 12, "occupied": 21, "maintenance": 3, "quarantine": 0}, {"id": "maternity", "name": "Maternity / Labour", "ico": "👶", "total": 20, "available": 9, "occupied": 10, "maintenance": 1, "quarantine": 0}, {"id": "paediatric", "name": "Paediatric Ward", "ico": "🧒", "total": 18, "available": 7, "occupied": 9, "maintenance": 2, "quarantine": 0}, {"id": "surgical", "name": "Surgical Ward", "ico": "🔪", "total": 22, "available": 10, "occupied": 11, "maintenance": 1, "quarantine": 0}, {"id": "medical", "name": "Medical Ward", "ico": "💊", "total": 30, "available": 11, "occupied": 17, "maintenance": 2, "quarantine": 0}];
+let services = [{"id": "ct", "name": "CT Scanner", "ico": "🩻", "bg": "#fef3c7", "status": "operational", "notes": ""}, {"id": "mri", "name": "MRI Scanner", "ico": "🔬", "bg": "#f1f5f9", "status": "maintenance", "notes": "Scheduled servicing — back Monday"}, {"id": "theatre1", "name": "Operating Theatre 1", "ico": "🏥", "bg": "#dcfce7", "status": "operational", "notes": ""}, {"id": "theatre2", "name": "Operating Theatre 2", "ico": "🏥", "bg": "#dcfce7", "status": "operational", "notes": ""}, {"id": "xray", "name": "X-Ray Machine", "ico": "📡", "bg": "#f0fdf4", "status": "operational", "notes": ""}, {"id": "ultrasound", "name": "Ultrasound", "ico": "🔊", "bg": "#eff6ff", "status": "operational", "notes": ""}, {"id": "blood_bank", "name": "Blood Bank", "ico": "🩸", "bg": "#dbeafe", "status": "low_stock", "notes": "O-Neg critically low"}, {"id": "pharmacy", "name": "Pharmacy", "ico": "💊", "bg": "#fdf4ff", "status": "operational", "notes": ""}, {"id": "laboratory", "name": "Laboratory", "ico": "🧪", "bg": "#f0fdf4", "status": "operational", "notes": ""}, {"id": "oxygen", "name": "Oxygen Supply", "ico": "💨", "bg": "#dcfce7", "status": "operational", "notes": "78% level"}, {"id": "generator", "name": "Generator / Power", "ico": "⚡", "bg": "#fefce8", "status": "operational", "notes": ""}, {"id": "ambulance", "name": "Ambulance Bay", "ico": "🚑", "bg": "#fff7ed", "status": "operational", "notes": "2 units available"}];
+let incidents = [
+  {id:'INC001',type:'Medication Error',severity:'high',description:'Patient received incorrect dosage of metformin due to unclear prescription. Nurse caught error before administration.',actions:'Prescription voided and rewritten. Pharmacist alerted. Patient monitored for 2 hours with no adverse effect.',prevention:'Recommend barcode scanning system for all medication dispensing.',location:'Medical Ward',hospital:'Korle Bu Teaching Hospital',datetime:'2025-07-21T08:30',anonymous:false,reporter:'Sr. Abena Mensah',staff_id:'GHS-2024-0042',submitted:new Date(Date.now()-7200000).toISOString(),status:'review'},
+  {id:'INC002',type:'Patient Fall',severity:'medium',description:'Elderly patient fell while attempting to use bathroom unassisted at 03:00. Patient had been marked as high fall risk.',actions:'Patient assessed — no fractures found. Fall reported to duty doctor. Family notified.',prevention:'Ensure bed rails raised for all high-risk patients. Increase night check frequency.',location:'General Ward (Female)',hospital:'Korle Bu Teaching Hospital',datetime:'2025-07-21T03:00',anonymous:false,reporter:'Nurse Ama Darko',staff_id:'GHS-2024-0089',submitted:new Date(Date.now()-5400000).toISOString(),status:'open'},
+  {id:'INC003',type:'Equipment Failure',severity:'high',description:'Ventilator in ICU Bay 3 alarmed and failed to maintain set tidal volume. Patient on mechanical ventilation.',actions:'Switched patient to backup manual bagging immediately. Biomedical team called. Replacement ventilator sourced.',prevention:'Increase equipment pre-use checks. Ensure backup ventilator always available in ICU.',location:'ICU / Intensive Care',hospital:'Korle Bu Teaching Hospital',datetime:'2025-07-20T22:15',anonymous:false,reporter:'ICU Nurse (Anonymous)',staff_id:null,submitted:new Date(Date.now()-18000000).toISOString(),status:'open'},
+  {id:'INC004',type:'Near Miss',severity:'low',description:'Wrong patient wristband nearly scanned before blood transfusion — caught by second nurse during double-check process.',actions:'Correct patient identified and transfusion completed safely. Both nurses commended.',prevention:'Reinforce two-nurse verification protocol for all blood products. Current protocol working correctly.',location:'Surgical Ward',hospital:'Korle Bu Teaching Hospital',datetime:'2025-07-20T14:45',anonymous:true,reporter:'Anonymous',staff_id:null,submitted:new Date(Date.now()-86400000).toISOString(),status:'closed'},
+  {id:'INC005',type:'Infection Control Breach',severity:'critical',description:'Staff member observed entering isolation room without full PPE. Patient in room is confirmed TB-positive.',actions:'Staff removed from isolation duties pending training. Exposed staff tested. Room deep-cleaned and re-sealed.',prevention:'Mandatory PPE training refresh for all ward staff. PPE compliance audit scheduled.',location:'Medical Ward',hospital:'Korle Bu Teaching Hospital',datetime:'2025-07-19T10:00',anonymous:false,reporter:'Ward Manager K. Osei',staff_id:'GHS-2024-0011',submitted:new Date(Date.now()-172800000).toISOString(),status:'open'},
+];
+let faults = [
+  {id:'F001',equipment:'MRI Scanner',severity:'medium',description:'Scheduled preventive maintenance. Unit will be offline for 3 days.',location:'Radiology Department, Floor 2',reported_by:'Biomedical Dept',reported_at:new Date(Date.now()-86400000).toISOString(),status:'open',hospital:'Korle Bu Teaching Hospital'},
+  {id:'F002',equipment:'Blood Bank Refrigerator',severity:'high',description:'Temperature alarm triggered twice overnight. O-negative stock at risk. Unit needs immediate inspection.',location:'Blood Bank, Ground Floor',reported_by:'Lab Technician P. Asante',reported_at:new Date(Date.now()-43200000).toISOString(),status:'open',hospital:'Korle Bu Teaching Hospital'},
+];
+let demoMode = false; // Firebase fully configured — production mode
+
+// ── USER STATE ──
+let currentUser = null;
+let currentRole = null;
+let incSeverity = null;
+let niSeverity  = null;
+let faultSeverity = null;
+let isAnon = true;
+let isNurseAnon = false;
+
+// ── SCREEN ROUTER ──
+function goScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => {
+    s.classList.remove('active');
+    s.style.display = 'none';
+  });
+  const s = document.getElementById('scr-' + id);
+  if (s) {
+    s.style.display = 'flex';
+    s.classList.add('active');
+  }
+  const loaders = {
+    'nurse-home':     loadNurseHome,
+    'nurse-update':   loadNurseUpdate,
+    'nurse-services': loadNurseServices,
+    'nurse-fault':    loadNurseFault,
+    'admin-home':     loadAdminHome,
+    'admin-beds':     loadAdminBeds,
+    'admin-services': loadAdminServices,
+    'admin-incidents':loadAdminIncidents,
+    'ghs-home':       loadGHSHome,
+    'incident-public':initPublicIncident,
+    'nurse-incident': initNurseIncident,
+  };
+  if (loaders[id]) loaders[id]();
+}
+
+// ── TOAST ──
+let _toastTimer = null;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+// ── UTILS ──
+function svcLbl(s) {
+  const m = {'operational':'Operational','maintenance':'Maintenance','offline':'Offline','low_stock':'Low Stock','low':'Low','adequate':'Adequate'};
+  return m[s] || s || 'Unknown';
+}
+function svcCls(s) {
+  if (s === 'operational' || s === 'adequate') return 'g';
+  if (s === 'maintenance' || s === 'low_stock' || s === 'low') return 'a';
+  return 'r';
+}
+function sevCls(s) {
+  return s === 'critical' ? 'critical' : s === 'high' ? 'high' : s === 'medium' ? 'medium' : 'low';
+}
+function timeAgo(ts) {
+  if (!ts) return '—';
+  const d = (Date.now() - new Date(ts)) / 1000;
+  if (d < 60) return 'just now';
+  if (d < 3600) return Math.floor(d/60) + 'm ago';
+  if (d < 86400) return Math.floor(d/3600) + 'h ago';
+  return Math.floor(d/86400) + 'd ago';
+}
+function togglePwd(id, btn) {
+  const inp = document.getElementById(id);
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+  btn.textContent = inp.type === 'password' ? '👁' : '🙈';
+}
+
+// ── AUTH ──
+// ── Firebase REST helpers (same pattern as RespondaHealth) ──
+const FBAUTH = {
+  async signIn(email, password) {
+    const r = await fetch(
+      `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${FB_KEY}`,
+      { method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({email, password, returnSecureToken:true}) }
+    );
+    const d = await r.json();
+    if (d.error) throw new Error(d.error.message);
+    return d;
+  },
+  async signUp(email, password) {
+    const r = await fetch(
+      `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${FB_KEY}`,
+      { method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({email, password, returnSecureToken:true}) }
+    );
+    const d = await r.json();
+    if (d.error) throw new Error(d.error.message);
+    return d;
+  }
+};
+
+const FBDB = {
+  async set(path, data) {
+    const r = await fetch(`${FB_URL}/bedsync/${path}.json`,
+      { method:'PUT', body:JSON.stringify(data) });
+    return r.json();
+  },
+  async get(path) {
+    const r = await fetch(`${FB_URL}/bedsync/${path}.json`);
+    return r.json();
+  },
+  async push(path, data) {
+    const r = await fetch(`${FB_URL}/bedsync/${path}.json`,
+      { method:'POST', body:JSON.stringify(data) });
+    return r.json();
+  },
+  async patch(path, data) {
+    const r = await fetch(`${FB_URL}/bedsync/${path}.json`,
+      { method:'PATCH', body:JSON.stringify(data) });
+    return r.json();
+  }
+};
+
+let fbUserId = null;
+let fbIdToken = null;
+
+async function doLogin() {
+  const email = document.getElementById('li-email').value.trim();
+  const pass  = document.getElementById('li-pass').value;
+  if (!email) { toast('⚠️ Enter your email'); return; }
+  if (!pass)  { toast('⚠️ Enter your password'); return; }
+
+  // Show loading
+  const btn = document.querySelector('#scr-login .btn-teal');
+  if (btn) { btn.textContent = 'Signing in...'; btn.disabled = true; }
+
+  try {
+    const auth = await FBAUTH.signIn(email, pass);
+    fbUserId  = auth.localId;
+    fbIdToken = auth.idToken;
+
+    // Load user profile from database
+    const profile = await FBDB.get(`users/${fbUserId}`);
+    if (profile && profile.role) {
+      currentUser = { ...profile, email };
+      currentRole = profile.role;
+    } else {
+      // Auto-detect role from email as fallback
+      let role = 'nurse';
+      if (email.includes('admin') || email.includes('director') || email.includes('matron')) role = 'admin';
+      else if (email.includes('ghs') || email.includes('health.gov') || email.includes('district')) role = 'ghs';
+      currentUser = {
+        email, role,
+        name: email.split('@')[0].replace(/[._]/g,' ').replace(/\b\w/g,c=>c.toUpperCase()),
+        hospital: 'Kibi Government Hospital',
+        ward: 'General',
+        staff_id: ''
+      };
+      currentRole = role;
+    }
+    toast('✅ Welcome back, ' + (currentUser.name || email));
+    routeToRole(currentRole);
+  } catch(e) {
+    const msg = e.message === 'INVALID_PASSWORD' ? 'Wrong password' :
+                e.message === 'EMAIL_NOT_FOUND'  ? 'Email not registered' :
+                e.message === 'INVALID_LOGIN_CREDENTIALS' ? 'Invalid email or password' :
+                e.message;
+    toast('❌ ' + msg);
+  } finally {
+    if (btn) { btn.textContent = 'Sign In →'; btn.disabled = false; }
+  }
+}
+
+async function doRegister() {
+  const name    = document.getElementById('rg-name').value.trim();
+  const email   = document.getElementById('rg-email').value.trim();
+  const role    = document.getElementById('rg-role').value;
+  const hosp    = document.getElementById('rg-hospital').value.trim();
+  const ward    = document.getElementById('rg-ward').value;
+  const staffId = document.getElementById('rg-staffid').value.trim();
+  const pass    = document.getElementById('rg-pass').value;
+
+  if (!name)  { toast('⚠️ Enter your full name'); return; }
+  if (!email) { toast('⚠️ Enter your email'); return; }
+  if (!role)  { toast('⚠️ Select your role'); return; }
+  if (!hosp)  { toast('⚠️ Enter your hospital'); return; }
+  if (!pass || pass.length < 6) { toast('⚠️ Password must be at least 6 characters'); return; }
+
+  const btn = document.querySelector('#scr-register .btn-teal');
+  if (btn) { btn.textContent = 'Creating account...'; btn.disabled = true; }
+
+  try {
+    const auth = await FBAUTH.signUp(email, pass);
+    fbUserId  = auth.localId;
+    fbIdToken = auth.idToken;
+
+    const profile = {
+      name, email, role,
+      hospital: hosp,
+      ward: ward || 'Not assigned',
+      staff_id: staffId,
+      created_at: new Date().toISOString()
+    };
+
+    // Save profile to database
+    await FBDB.set(`users/${fbUserId}`, profile);
+
+    currentUser = profile;
+    currentRole = role;
+    toast('✅ Account created! Welcome, ' + name);
+    routeToRole(role);
+  } catch(e) {
+    const msg = e.message === 'EMAIL_EXISTS' ? 'This email is already registered — try signing in' :
+                e.message === 'WEAK_PASSWORD : Password should be at least 6 characters' ? 'Password too short — minimum 6 characters' :
+                e.message;
+    toast('❌ ' + msg);
+  } finally {
+    if (btn) { btn.textContent = 'Create Account →'; btn.disabled = false; }
+  }
+}
+
+function routeToRole(role) {
+  if (role === 'nurse')  { updateNurseProfile(); goScreen('nurse-home'); }
+  else if (role === 'admin') { updateAdminProfile(); goScreen('admin-home'); }
+  else if (role === 'ghs')   { updateGHSProfile();   goScreen('ghs-home'); }
+}
+
+function doLogout() {
+  currentUser = null; currentRole = null;
+  goScreen('login');
+}
+
+// ── PROFILE UPDATES ──
+function updateNurseProfile() {
+  const u = currentUser;
+  if (!u) return;
+  const n = u.name || u.email || 'N';
+  const setT = (id,v) => { const e=document.getElementById(id); if(e) e.textContent=v; };
+  setT('np-ava',  n[0].toUpperCase());
+  setT('np-name', n);
+  setT('np-role', u.role === 'nurse' ? 'Nurse / Health Worker' : u.role);
+  setT('np-ward', u.ward || 'Ward not set');
+  setT('np-hosp', u.hospital || '—');
+  setT('nh-ward-name', u.ward || 'All Wards');
+  setT('nh-hosp-name', u.hospital || 'Hospital Dashboard');
+}
+function updateAdminProfile() {
+  const u = currentUser;
+  if (!u) return;
+  const n = u.name || u.email || 'A';
+  const setT = (id,v) => { const e=document.getElementById(id); if(e) e.textContent=v; };
+  setT('adp-ava',  n[0].toUpperCase());
+  setT('adp-name', n);
+  setT('adp-hosp', u.hospital || '—');
+  setT('ah-hosp-name', u.hospital || 'Management Dashboard');
+  setT('ah-hosp-sub',  'Hospital Administration');
+}
+function updateGHSProfile() {
+  const u = currentUser;
+  if (!u) return;
+  const n = u.name || 'GHS Officer';
+  const setT = (id,v) => { const e=document.getElementById(id); if(e) e.textContent=v; };
+  setT('ghp-ava',    n[0].toUpperCase());
+  setT('ghp-name',   n);
+  setT('ghp-region', u.hospital || 'Ghana Health Service');
+}
+
+// ── WARD RENDERING ──
+function wardCard(w, clickable=false) {
+  const total = w.available + w.occupied + w.maintenance + w.quarantine;
+  const pct   = total ? Math.round((w.occupied / total) * 100) : 0;
+  const cls   = pct > 90 ? 'r' : pct > 70 ? 'a' : 'g';
+  return `<div class="ward-card" ${clickable ? `onclick="nuLoadWard('${w.id}')"style="cursor:pointer"` : ''}>
+    <div class="ward-hdr">
+      <div class="ward-ico">${w.ico}</div>
+      <div><div class="ward-name">${w.name}</div><div class="ward-status">${total} total · ${pct}% occupied</div></div>
+    </div>
+    <div class="ward-body">
+      <div class="ward-stat-row">
+        <div class="ws-box avail"><div class="ws-n avail">${w.available}</div><div class="ws-l">Available</div></div>
+        <div class="ws-box occup"><div class="ws-n occup">${w.occupied}</div><div class="ws-l">Occupied</div></div>
+        <div class="ws-box maint"><div class="ws-n maint">${w.maintenance}</div><div class="ws-l">Maint.</div></div>
+        <div class="ws-box quar"><div class="ws-n quar">${w.quarantine}</div><div class="ws-l">Quar.</div></div>
+      </div>
+      <div class="meter-row"><div style="font-size:.62rem;color:var(--g400);margin-bottom:2px">Occupancy</div>
+        <div class="meter"><div class="meter-fill ${cls}" style="width:${pct}%"></div></div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function wardTableRow(w) {
+  const total = w.available + w.occupied + w.maintenance + w.quarantine;
+  const pct   = total ? Math.round((w.occupied / total) * 100) : 0;
+  const cls   = pct > 90 ? 'var(--red)' : pct > 70 ? 'var(--amber)' : 'var(--green)';
+  return `<div style="display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--g100)">
+    <span style="font-size:1rem;width:26px;text-align:center">${w.ico}</span>
+    <div style="flex:1;min-width:0"><div style="font-size:.8rem;font-weight:700;color:var(--dark)">${w.name}</div></div>
+    <span class="chip ${pct>90?'r':pct>70?'a':'g'}">${w.available} free</span>
+    <span style="font-size:.72rem;font-weight:800;color:${cls};min-width:32px;text-align:right">${pct}%</span>
+  </div>`;
+}
+
+// ── TOTALS ──
+function calcTotals() {
+  const total    = wards.reduce((s,w) => s+w.available+w.occupied+w.maintenance+w.quarantine,0);
+  const available= wards.reduce((s,w) => s+w.available,0);
+  const occupied = wards.reduce((s,w) => s+w.occupied,0);
+  const maintenance=wards.reduce((s,w) => s+w.maintenance,0);
+  const util     = total ? Math.round((occupied/total)*100) : 0;
+  return {total,available,occupied,maintenance,util};
+}
+
+function setEl(id,v) { const e=document.getElementById(id); if(e) e.textContent=v; }
+
+// ── ALERTS ──
+function buildAlerts() {
+  const alerts = [];
+  wards.forEach(w => {
+    const total = w.available+w.occupied+w.maintenance+w.quarantine;
+    const pct   = total ? (w.occupied/total)*100 : 0;
+    if (w.available === 0) alerts.push({type:'r', ico:'🔴', title:w.name+' FULL', body:'No beds available. Immediate action required.'});
+    else if (pct > 90)     alerts.push({type:'a', ico:'🟡', title:w.name+' Near Full', body:Math.round(pct)+'% occupied — only '+w.available+' beds remaining.'});
+  });
+  services.forEach(s => {
+    if (s.status === 'offline')    alerts.push({type:'r', ico:'⚠️', title:s.name+' OFFLINE', body:s.notes||'Service is offline. Maintenance required.'});
+    if (s.status === 'low_stock')  alerts.push({type:'a', ico:'🩸', title:s.name+' Low Stock', body:s.notes||'Stock levels critically low.'});
+    if (s.status === 'maintenance')alerts.push({type:'a', ico:'🔧', title:s.name+' Maintenance', body:s.notes||'Service in scheduled maintenance.'});
+  });
+  return alerts;
+}
+
+function renderAlerts(containerId) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  const alerts = buildAlerts();
+  el.innerHTML = alerts.length
+    ? alerts.map(a => `<div class="ab ${a.type}"><span class="ab-ico">${a.ico}</span><div><div class="ab-title">${a.title}</div><div class="ab-body">${a.body}</div></div></div>`).join('')
+    : '<div class="ab g"><span class="ab-ico">✅</span><div><div class="ab-title">All Clear</div><div class="ab-body">No critical alerts at this time.</div></div></div>';
+}
+
+// ── NURSE HOME ──
+async function loadNurseHome() {
+  updateNurseProfile();
+  // Pull live ward data from Firebase
+  try {
+    const hosp = (currentUser?.hospital || 'kibi').toLowerCase().replace(/[^a-z0-9]/g,'_');
+    const liveWards = await FBDB.get(`hospitals/${hosp}/wards`);
+    if (liveWards && typeof liveWards === 'object') {
+      Object.values(liveWards).forEach(lw => {
+        const idx = wards.findIndex(w => w.id === lw.ward_id);
+        if (idx >= 0) Object.assign(wards[idx], lw);
+      });
+    }
+    const liveSvcs = await FBDB.get(`hospitals/${hosp}/services`);
+    if (liveSvcs && typeof liveSvcs === 'object') {
+      Object.entries(liveSvcs).forEach(([id, sv]) => {
+        const idx = services.findIndex(s => s.id === id);
+        if (idx >= 0) Object.assign(services[idx], sv);
+      });
+    }
+    const liveInc = await FBDB.get(`hospitals/${hosp}/incidents`);
+    if (liveInc && typeof liveInc === 'object') {
+      const fresh = Object.values(liveInc).sort((a,b) => new Date(b.submitted)-new Date(a.submitted));
+      incidents = [...fresh, ...incidents.filter(i => !fresh.find(f => f.id === i.id))];
+    }
+    const liveFaults = await FBDB.get(`hospitals/${hosp}/faults`);
+    if (liveFaults && typeof liveFaults === 'object') {
+      const freshF = Object.values(liveFaults).sort((a,b) => new Date(b.reported_at)-new Date(a.reported_at));
+      faults = [...freshF, ...faults.filter(f => !freshF.find(ff => ff.id === f.id))];
+    }
+  } catch(e) { /* use local demo data */ }
+  const t = calcTotals();
+  setEl('nh-avail', t.available);
+  setEl('nh-occup', t.occupied);
+  setEl('nh-maint', t.maintenance);
+  const bar = document.getElementById('nh-util-bar');
+  if (bar) { bar.style.width = t.util+'%'; bar.className = 'meter-fill ' + (t.util>90?'r':t.util>70?'a':'g'); }
+  setEl('nh-util-pct', t.util+'% occupied');
+  const ward = currentUser?.ward;
+  setEl('nh-ward-label', ward || 'All Wards');
+  const list = document.getElementById('nh-wards-list');
+  if (list) list.innerHTML = wards.map(w => wardCard(w)).join('');
+}
+
+// ── NURSE UPDATE ──
+let nuCurrentWard = null;
+let nuBedCounts = {available:0,occupied:0,maintenance:0,quarantine:0};
+
+function loadNurseUpdate() {
+  const sel = document.getElementById('nu-ward-select');
+  if (sel && sel.options.length <= 1) {
+    wards.forEach(w => { const o=document.createElement('option'); o.value=w.id; o.textContent=w.name; sel.appendChild(o); });
+  }
+  // Auto-select nurse's own ward
+  const myWard = wards.find(w => currentUser?.ward && w.name.toLowerCase().includes(currentUser.ward.toLowerCase().split(' ')[0]));
+  if (myWard && sel) { sel.value = myWard.id; nuLoadWard(myWard.id); }
+}
+
+function nuLoadWard(wardId) {
+  nuCurrentWard = wards.find(w => w.id === wardId);
+  if (!nuCurrentWard) { document.getElementById('nu-ward-form').style.display='none'; return; }
+  nuBedCounts = {
+    available:   nuCurrentWard.available,
+    occupied:    nuCurrentWard.occupied,
+    maintenance: nuCurrentWard.maintenance,
+    quarantine:  nuCurrentWard.quarantine
+  };
+  ['available','occupied','maintenance','quarantine'].forEach(k => setEl('sv-'+k, nuBedCounts[k]));
+  document.getElementById('nu-ward-form').style.display = 'block';
+  setEl('nu-ward-sub', nuCurrentWard.name);
+  nuUpdateTotal();
+}
+
+function stepBed(key, delta) {
+  nuBedCounts[key] = Math.max(0, nuBedCounts[key] + delta);
+  setEl('sv-'+key, nuBedCounts[key]);
+  nuUpdateTotal();
+}
+
+function nuUpdateTotal() {
+  const total = Object.values(nuBedCounts).reduce((a,b)=>a+b,0);
+  const util  = total ? Math.round((nuBedCounts.occupied/total)*100) : 0;
+  setEl('sv-total', total);
+  setEl('sv-util',  util+'%');
+  const utilEl = document.getElementById('sv-util');
+  if (utilEl) utilEl.style.color = util>90?'var(--red)':util>70?'var(--amber)':'var(--green)';
+}
+
+async function nuPublish() {
+  if (!nuCurrentWard) { toast('⚠️ Select a ward first'); return; }
+  const notes = document.getElementById('nu-notes')?.value || '';
+  const hosp  = (currentUser?.hospital || 'kibi').toLowerCase().replace(/[^a-z0-9]/g,'_');
+  const update = {
+    ...nuBedCounts,
+    notes,
+    ward_id:      nuCurrentWard.id,
+    ward_name:    nuCurrentWard.name,
+    updated_by:   currentUser?.name || 'Staff',
+    updated_at:   new Date().toISOString(),
+    hospital:     currentUser?.hospital || 'Kibi Government Hospital',
+  };
+  // Update local cache
+  const idx = wards.findIndex(w => w.id === nuCurrentWard.id);
+  if (idx >= 0) Object.assign(wards[idx], update);
+  // Push to Firebase
+  try {
+    await FBDB.set(`hospitals/${hosp}/wards/${nuCurrentWard.id}`, update);
+    await FBDB.push(`hospitals/${hosp}/update_log`, {
+      ...update, type: 'bed_update', ts: update.updated_at
+    });
+    toast('📡 Ward update published — visible to all roles live!');
+  } catch(e) {
+    toast('⚠️ Saved locally — will sync when online');
+  }
+  goScreen('nurse-home');
+}
+
+// ── NURSE SERVICES ──
+function loadNurseServices() {
+  const list = document.getElementById('ns-services-list');
+  if (!list) return;
+  const cycleStatus = (svc) => {
+    const cycle = {'operational':'maintenance','maintenance':'offline','offline':'operational','low_stock':'maintenance','low':'maintenance','adequate':'operational'};
+    svc.status = cycle[svc.status] || 'operational';
+    loadNurseServices();
+  };
+  list.innerHTML = services.map((svc,i) => `
+    <div class="svc-row" ${i===services.length-1?'style="border:none"':''}>
+      <div class="svc-ico" style="background:${svc.bg}">${svc.ico}</div>
+      <div style="flex:1"><div class="svc-name">${svc.name}</div><div class="svc-sub">${svc.notes||'Tap to update status'}</div></div>
+      <button onclick="(function(){const s=services[${i}];s.status=s.status==='operational'?'maintenance':s.status==='maintenance'?'offline':'operational';loadNurseServices();})()" style="padding:4px 12px;border-radius:8px;border:none;cursor:pointer;font-family:inherit;font-weight:700;font-size:.7rem;background:${svc.status==='operational'?'#dcfce7':svc.status==='maintenance'?'#fef3c7':'#fee2e2'};color:${svc.status==='operational'?'var(--green)':svc.status==='maintenance'?'#92400e':'var(--red)'}">${svcLbl(svc.status)}</button>
+    </div>`).join('');
+}
+
+async function nsPublishServices() {
+  const hosp = (currentUser?.hospital || 'kibi').toLowerCase().replace(/[^a-z0-9]/g,'_');
+  const update = {
+    services: services.reduce((obj, s) => { obj[s.id]=s; return obj; }, {}),
+    updated_by: currentUser?.name || 'Staff',
+    updated_at:  new Date().toISOString(),
+    hospital:    currentUser?.hospital || 'Kibi Government Hospital',
+  };
+  try {
+    await FBDB.set(`hospitals/${hosp}/services`, update.services);
+    await FBDB.push(`hospitals/${hosp}/update_log`, {
+      type:'service_update', ...update, ts: update.updated_at
+    });
+    toast('📡 Services update published — visible to all roles!');
+  } catch(e) {
+    toast('⚠️ Saved locally — will sync when online');
+  }
+  goScreen('nurse-home');
+}
+
+// ── NURSE FAULT ──
+function loadNurseFault() {
+  renderFaultList('nf-open-list');
+}
+function setFaultSev(sev, btn) {
+  faultSeverity = sev;
+  document.querySelectorAll('#scr-nurse-fault .sev-btn').forEach(b => { b.className='sev-btn'; b.style.opacity='.5'; });
+  btn.className = 'sev-btn active-'+sev; btn.style.opacity='1';
+}
+async function submitFault() {
+  const equip = document.getElementById('nf-equip')?.value;
+  const desc  = document.getElementById('nf-desc')?.value?.trim();
+  const loc   = document.getElementById('nf-loc')?.value?.trim();
+  if (!equip) { toast('⚠️ Select the equipment'); return; }
+  if (!desc)  { toast('⚠️ Describe the fault'); return; }
+  const fault = {
+    id: 'F'+Date.now(),
+    equipment: equip, severity: faultSeverity||'medium',
+    description: desc, location: loc||'',
+    reported_by: currentUser?.name||'Staff',
+    reported_at: new Date().toISOString(),
+    status: 'open',
+    hospital: currentUser?.hospital||''
+  };
+  faults.unshift(fault);
+  // Update service status locally
+  const svc = services.find(s => s.name.toLowerCase().includes(equip.toLowerCase().split(' ')[0]));
+  if (svc) svc.status = 'maintenance';
+  // Push to Firebase
+  try {
+    const hosp = (currentUser?.hospital || 'kibi').toLowerCase().replace(/[^a-z0-9]/g,'_');
+    await FBDB.push(`hospitals/${hosp}/faults`, fault);
+    if (svc) await FBDB.patch(`hospitals/${hosp}/services/${svc.id}`, {status:'maintenance', notes:desc});
+  } catch(e) { /* saved locally */ }
+  toast('🔧 Fault reported — maintenance team alerted');
+  document.getElementById('nf-equip').value = '';
+  document.getElementById('nf-desc').value  = '';
+  document.getElementById('nf-loc').value   = '';
+  faultSeverity = null;
+  renderFaultList('nf-open-list');
+}
+
+function renderFaultList(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const openFaults = faults.filter(f => f.status === 'open');
+  if (!openFaults.length) { el.innerHTML='<div style="text-align:center;padding:14px;color:var(--g400);font-size:.8rem">✓ No open fault reports</div>'; return; }
+  el.innerHTML = openFaults.map(f => `
+    <div class="inc-card">
+      <div class="inc-hdr"><span class="inc-type">${f.equipment}</span><span class="sev-badge ${sevCls(f.severity)}">${f.severity?.toUpperCase()}</span></div>
+      <div class="inc-meta">📍 ${f.location||'Location not specified'} · ${timeAgo(f.reported_at)} · By ${f.reported_by}</div>
+      <div class="inc-body">${f.description}</div>
+    </div>`).join('');
+}
+
+// ── INCIDENT REPORTING (PUBLIC) ──
+function initPublicIncident() {
+  const dt = document.getElementById('inc-datetime');
+  if (dt) dt.value = new Date().toISOString().slice(0,16);
+}
+function toggleAnon() {
+  isAnon = !isAnon;
+  const tog = document.getElementById('anon-tog');
+  const fields = document.getElementById('identity-fields');
+  if (tog) tog.className = 'tog ' + (isAnon ? 'on' : '');
+  if (fields) fields.style.display = isAnon ? 'none' : 'block';
+}
+function setSev(sev, btn) {
+  incSeverity = sev;
+  document.querySelectorAll('#scr-incident-public .sev-btn').forEach(b => { b.className='sev-btn'; });
+  btn.className = 'sev-btn active-'+sev;
+}
+async function submitIncident() {
+  const type = document.getElementById('inc-type')?.value;
+  const desc = document.getElementById('inc-desc')?.value?.trim();
+  if (!type) { toast('⚠️ Select incident type'); return; }
+  if (!desc) { toast('⚠️ Describe what happened'); return; }
+  const report = {
+    id: 'INC'+Date.now(),
+    type, severity: incSeverity||'medium',
+    description: desc,
+    actions:     document.getElementById('inc-actions')?.value||'',
+    prevention:  document.getElementById('inc-prevention')?.value||'',
+    location:    document.getElementById('inc-loc')?.value||'',
+    hospital:    document.getElementById('inc-hospital')?.value||'',
+    datetime:    document.getElementById('inc-datetime')?.value||new Date().toISOString(),
+    anonymous:   isAnon,
+    reporter:    isAnon ? 'Anonymous' : (document.getElementById('inc-name')?.value||'Anonymous'),
+    staff_id:    isAnon ? null : document.getElementById('inc-staffid')?.value||null,
+    submitted:   new Date().toISOString(),
+    status:      'open'
+  };
+  incidents.unshift(report);
+  // Push to Firebase under a general path (no hospital-specific, since this is public)
+  try {
+    await FBDB.push('incidents/public', report);
+  } catch(e) { /* saved locally */ }
+  toast('✅ Incident report submitted. Reference: '+ report.id);
+  ['inc-type','inc-desc','inc-actions','inc-prevention','inc-loc','inc-hospital','inc-name','inc-staffid'].forEach(id=>{ const e=document.getElementById(id); if(e) e.value=''; });
+  incSeverity = null;
+  document.querySelectorAll('#scr-incident-public .sev-btn').forEach(b=>b.className='sev-btn');
+  goScreen('login');
+}
+
+// ── NURSE INCIDENT ──
+function initNurseIncident() {
+  isNurseAnon = false;
+  const tog = document.getElementById('ni-anon-tog');
+  if (tog) tog.className = 'tog';
+  const dt = document.getElementById('ni-datetime');
+  if (dt) dt.value = new Date().toISOString().slice(0,16);
+  setEl('ni-staff-display', (currentUser?.name||'—') + (currentUser?.staff_id?' ('+currentUser.staff_id+')':''));
+  const locEl = document.getElementById('ni-loc');
+  if (locEl && currentUser?.ward) locEl.value = currentUser.ward;
+}
+function toggleNurseAnon() {
+  isNurseAnon = !isNurseAnon;
+  const tog = document.getElementById('ni-anon-tog');
+  const disp = document.getElementById('ni-staff-display');
+  if (tog) tog.className = 'tog ' + (isNurseAnon ? 'on' : '');
+  if (disp) disp.textContent = isNurseAnon ? 'Anonymous' : ((currentUser?.name||'—')+(currentUser?.staff_id?' ('+currentUser.staff_id+')':''));
+}
+function setNiSev(sev, btn) {
+  niSeverity = sev;
+  ['low','medium','high','critical'].forEach(s => { const b=document.getElementById('ni-sev-'+s); if(b) { b.className='sev-btn'; } });
+  btn.className = 'sev-btn active-'+sev;
+}
+async function submitNurseIncident() {
+  const type = document.getElementById('ni-type')?.value;
+  const desc = document.getElementById('ni-desc')?.value?.trim();
+  if (!type) { toast('⚠️ Select incident type'); return; }
+  if (!desc) { toast('⚠️ Describe what happened'); return; }
+  const report = {
+    id: 'INC'+Date.now(),
+    type, severity: niSeverity||'medium',
+    description: desc,
+    actions:     document.getElementById('ni-actions')?.value||'',
+    prevention:  document.getElementById('ni-prevention')?.value||'',
+    location:    document.getElementById('ni-loc')?.value||currentUser?.ward||'',
+    hospital:    currentUser?.hospital||'',
+    datetime:    document.getElementById('ni-datetime')?.value||new Date().toISOString(),
+    anonymous:   isNurseAnon,
+    reporter:    isNurseAnon ? 'Anonymous' : (currentUser?.name||'Staff'),
+    staff_id:    isNurseAnon ? null : currentUser?.staff_id||null,
+    submitted:   new Date().toISOString(),
+    status:      'open'
+  };
+  incidents.unshift(report);
+  // Push to Firebase under hospital path
+  try {
+    const hosp = (currentUser?.hospital || 'kibi').toLowerCase().replace(/[^a-z0-9]/g,'_');
+    await FBDB.push(`hospitals/${hosp}/incidents`, report);
+  } catch(e) { /* saved locally */ }
+  toast('✅ Incident reported. Reference: '+ report.id);
+  ['ni-type','ni-desc','ni-actions','ni-prevention'].forEach(id=>{ const e=document.getElementById(id); if(e) e.value=''; });
+  niSeverity=null;
+  ['low','medium','high','critical'].forEach(s=>{ const b=document.getElementById('ni-sev-'+s); if(b) b.className='sev-btn'; });
+  goScreen('nurse-home');
+}
+
+// ── ADMIN HOME ──
+async function loadAdminHome() {
+  updateAdminProfile();
+  const t = calcTotals();
+  setEl('ah-total',    t.total);
+  setEl('ah-avail',    t.available);
+  setEl('ah-occup',    t.occupied);
+  setEl('ah-maint',    t.maintenance);
+  setEl('ah-util',     t.util+'%');
+  setEl('ah-incidents', incidents.filter(i=>i.status==='open').length);
+  renderAlerts('ah-alerts');
+  const tbl = document.getElementById('ah-wards-table');
+  if (tbl) tbl.innerHTML = wards.map(w=>wardTableRow(w)).join('');
+  const svcEl = document.getElementById('ah-services-issues');
+  if (svcEl) {
+    const issues = services.filter(s=>s.status!=='operational'&&s.status!=='adequate');
+    svcEl.innerHTML = issues.length
+      ? issues.map(s=>`<div class="svc-row"><div class="svc-ico" style="background:${s.bg}">${s.ico}</div><div style="flex:1"><div class="svc-name">${s.name}</div><div class="svc-sub">${s.notes||'Status: '+s.status}</div></div><span class="chip ${svcCls(s.status)}">${svcLbl(s.status)}</span></div>`).join('')
+      : '<div style="text-align:center;padding:12px;color:var(--g400);font-size:.8rem">✓ All services operational</div>';
+  }
+}
+
+// ── ADMIN BEDS ──
+function loadAdminBeds() {
+  const t = calcTotals();
+  setEl('ab-avail', t.available);
+  setEl('ab-occup', t.occupied);
+  setEl('ab-maint', t.maintenance);
+  setEl('ab-util',  t.util+'%');
+  const list = document.getElementById('ab-wards-list');
+  if (list) list.innerHTML = wards.map(w=>wardCard(w)).join('');
+}
+
+// ── ADMIN SERVICES ──
+function loadAdminServices() {
+  setEl('as-oper',  services.filter(s=>s.status==='operational'||s.status==='adequate').length);
+  setEl('as-maint', services.filter(s=>s.status==='maintenance'||s.status==='low_stock'||s.status==='low').length);
+  setEl('as-off',   services.filter(s=>s.status==='offline').length);
+  const el = document.getElementById('as-services-full');
+  if (el) el.innerHTML = `<div class="card-title">All Services</div>`+services.map((s,i)=>`
+    <div class="svc-row" ${i===services.length-1?'style="border:none"':''}>
+      <div class="svc-ico" style="background:${s.bg}">${s.ico}</div>
+      <div style="flex:1"><div class="svc-name">${s.name}</div><div class="svc-sub">${s.notes||'No notes'}</div></div>
+      <span class="chip ${svcCls(s.status)}">${svcLbl(s.status)}</span>
+    </div>`).join('');
+  renderFaultList('as-faults-list');
+}
+
+// ── ADMIN INCIDENTS ──
+function loadAdminIncidents() {
+  const open   = incidents.filter(i=>i.status==='open').length;
+  const review = incidents.filter(i=>i.status==='review').length;
+  const closed = incidents.filter(i=>i.status==='closed').length;
+  const anon   = incidents.filter(i=>i.anonymous).length;
+  setEl('ai-open',   open);
+  setEl('ai-review', review);
+  setEl('ai-closed', closed);
+  setEl('ai-anon',   anon);
+  aiFilterIncidents();
+}
+
+function aiFilterIncidents() {
+  const typeF = document.getElementById('ai-filter-type')?.value||'';
+  const sevF  = document.getElementById('ai-filter-sev')?.value||'';
+  let filtered = incidents.filter(i =>
+    (!typeF || i.type===typeF) &&
+    (!sevF  || i.severity===sevF)
+  );
+  const el = document.getElementById('ai-incidents-list');
+  if (!el) return;
+  if (!filtered.length) {
+    el.innerHTML = `<div class="inc-card" style="text-align:center;color:var(--g400);font-size:.8rem">No incidents match the selected filters</div>`;
+    return;
+  }
+  el.innerHTML = filtered.map(i => `
+    <div class="inc-card">
+      <div class="inc-hdr">
+        <span class="inc-type">${i.type}</span>
+        <span class="sev-badge ${sevCls(i.severity)}">${i.severity?.toUpperCase()}</span>
+      </div>
+      <div class="inc-meta">
+        ${i.anonymous ? '🔒 Anonymous' : '👤 '+i.reporter} · ${i.location||'—'} · ${timeAgo(i.submitted)}
+        · Ref: <strong style="font-family:var(--mono);font-size:.6rem">${i.id}</strong>
+      </div>
+      <div class="inc-body">${i.description}</div>
+      ${i.actions ? `<div style="margin-top:6px;font-size:.7rem;color:var(--g500)"><strong>Actions:</strong> ${i.actions}</div>` : ''}
+      <div style="margin-top:8px;display:flex;gap:6px">
+        <button onclick="incSetStatus('${i.id}','review')" style="padding:4px 10px;border-radius:6px;border:1px solid var(--amber);background:#fef3c7;color:#92400e;font-size:.65rem;font-weight:700;cursor:pointer">Under Review</button>
+        <button onclick="incSetStatus('${i.id}','closed')" style="padding:4px 10px;border-radius:6px;border:1px solid var(--green);background:#dcfce7;color:var(--green);font-size:.65rem;font-weight:700;cursor:pointer">Mark Closed</button>
+      </div>
+    </div>`).join('');
+}
+
+function incSetStatus(id, status) {
+  const i = incidents.find(x=>x.id===id);
+  if (i) { i.status=status; toast('✅ Incident updated to '+status); loadAdminIncidents(); }
+}
+
+// ── GHS HOME ──
+function loadGHSHome() {
+  updateGHSProfile();
+  const t = calcTotals();
+  setEl('gh-total', t.total);
+  setEl('gh-avail', t.available);
+  setEl('gh-occup', t.occupied);
+  setEl('gh-maint', t.maintenance);
+  setEl('gh-util',  t.util+'%');
+  setEl('gh-crit',  incidents.filter(i=>i.severity==='critical'&&i.status==='open').length);
+  renderAlerts('gh-alerts');
+  const tbl = document.getElementById('gh-wards-table');
+  if (tbl) tbl.innerHTML = wards.map(w=>wardTableRow(w)).join('');
+  const incEl = document.getElementById('gh-incidents-summary');
+  if (incEl) {
+    const open=incidents.filter(i=>i.status==='open').length;
+    const crit=incidents.filter(i=>i.severity==='critical').length;
+    incEl.innerHTML = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div class="stat-box"><div class="stat-n red">${open}</div><div class="stat-l">Open Reports</div></div>
+      <div class="stat-box"><div class="stat-n red">${crit}</div><div class="stat-l">Critical</div></div>
+      <div class="stat-box"><div class="stat-n navy">${incidents.filter(i=>i.anonymous).length}</div><div class="stat-l">Anonymous</div></div>
+      <div class="stat-box"><div class="stat-n green">${incidents.filter(i=>i.status==='closed').length}</div><div class="stat-l">Closed</div></div>
+    </div>
+    <button class="btn btn-ghost mt8" onclick="goScreen('admin-incidents')" style="font-size:.78rem;padding:9px">View All Incident Reports →</button>`;
+  }
+  const svcEl = document.getElementById('gh-services-issues');
+  if (svcEl) {
+    const issues = services.filter(s=>s.status!=='operational'&&s.status!=='adequate');
+    svcEl.innerHTML = issues.length
+      ? issues.map(s=>`<div class="svc-row"><div class="svc-ico" style="background:${s.bg}">${s.ico}</div><div style="flex:1"><div class="svc-name">${s.name}</div><div class="svc-sub">${s.notes||''}</div></div><span class="chip ${svcCls(s.status)}">${svcLbl(s.status)}</span></div>`).join('')
+      : '<div style="text-align:center;padding:12px;color:var(--g400);font-size:.8rem">✓ All services operational</div>';
+  }
+}
+
+// ── TOOLTIP SYSTEM ──
+(function(){
+  const tip = document.getElementById('rh-tip');
+  let showTimer, hideTimer, lpTimer;
+  function showTip(el,x,y){
+    const title=el.getAttribute('data-tip-title');
+    const text=el.getAttribute('data-tip');
+    if(!text)return;
+    tip.innerHTML=(title?`<span class="rh-tip-title">${title}</span>`:'')+text;
+    tip.classList.remove('visible');
+    let left=x+12,top=y-44;
+    const vw=window.innerWidth,vh=window.innerHeight;
+    if(left+220>vw-8)left=x-232;
+    if(left<8)left=8;
+    if(top<8)top=y+20;
+    tip.style.left=Math.max(8,left)+'px';
+    tip.style.top=Math.max(8,top)+'px';
+    void tip.offsetWidth;
+    tip.classList.add('visible');
+    clearTimeout(hideTimer);
+  }
+  function hideTip(){tip.classList.remove('visible');}
+  document.addEventListener('mouseover',e=>{
+    const el=e.target.closest('[data-tip]');
+    if(!el)return;
+    clearTimeout(showTimer);
+    showTimer=setTimeout(()=>showTip(el,e.clientX,e.clientY),400);
+  });
+  document.addEventListener('mouseout',e=>{
+    if(!e.target.closest('[data-tip]'))return;
+    clearTimeout(showTimer);
+    hideTimer=setTimeout(hideTip,100);
+  });
+  document.addEventListener('touchstart',e=>{
+    const el=e.target.closest('[data-tip]');
+    if(!el)return;
+    const t=e.touches[0];
+    lpTimer=setTimeout(()=>{
+      showTip(el,t.clientX,t.clientY);
+      if(navigator.vibrate)navigator.vibrate(30);
+      hideTimer=setTimeout(hideTip,3000);
+    },600);
+  },{passive:true});
+  document.addEventListener('touchend',()=>clearTimeout(lpTimer),{passive:true});
+  document.addEventListener('touchmove',()=>clearTimeout(lpTimer),{passive:true});
+})();
+
+
+// ══════════════════════════════════════════════════════
+// ADMIN DESKTOP DASHBOARD
+// ══════════════════════════════════════════════════════
+function isDesktop(){ return window.innerWidth >= 900; }
+
+function admActivateDesktop(){
+  document.body.classList.add('desktop-mode');
+  const u = currentUser;
+  const setT=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+  setT('adm-desk-name', u?.name||'Administrator');
+  const ava = document.getElementById('adm-desk-ava');
+  if(ava) ava.textContent = (u?.name||'A')[0].toUpperCase();
+  admRenderAll();
+  admRunClock();
+}
+
+function admRunClock(){
+  const el = document.getElementById('adm-clock');
+  if(el) el.textContent = new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  if(document.body.classList.contains('desktop-mode')) setTimeout(admRunClock, 1000);
+}
+
+function admPanel(name){
+  document.querySelectorAll('.adm-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.adm-nav-item').forEach(n=>n.classList.remove('active'));
+  const panel = document.getElementById('admp-'+name);
+  const nav   = document.getElementById('adm-nav-'+name);
+  if(panel) panel.classList.add('active');
+  if(nav)   nav.classList.add('active');
+  const titles = {overview:'Hospital Overview',beds:'Bed Management — All Wards',services:'Services & Equipment',faults:'Fault Queue',incidents:'Clinical Incidents'};
+  const el = document.getElementById('adm-panel-title');
+  if(el) el.textContent = titles[name]||name;
+  const renders = {overview:admRenderAll,beds:admRenderBeds,services:admRenderServices,faults:admRenderFaults,incidents:admRenderIncidents};
+  if(renders[name]) renders[name]();
+}
+
+function admRenderAll(){
+  const t = calcTotals();
+  const setT=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+  setT('ds-ah-total', t.total);
+  setT('ds-ah-avail', t.available);
+  setT('ds-ah-occup', t.occupied);
+  setT('ds-ah-maint', t.maintenance);
+  setT('ds-ah-util',  t.util+'%');
+  const openInc = incidents.filter(i=>i.status==='open').length;
+  setT('ds-ah-inc', openInc);
+  const badge = document.getElementById('adm-inc-badge');
+  if(badge) badge.textContent = openInc;
+  // Wards table
+  const wb = document.getElementById('ds-wards-tbody');
+  if(wb) wb.innerHTML = wards.map(w=>{
+    const total = w.available+w.occupied+w.maintenance+w.quarantine;
+    const pct   = total?Math.round((w.occupied/total)*100):0;
+    const cls   = pct>90?'r':pct>70?'a':'g';
+    return `<tr>
+      <td><strong>${w.ico} ${w.name}</strong></td>
+      <td style="color:var(--green);font-weight:800">${w.available}</td>
+      <td style="color:var(--red);font-weight:800">${w.occupied}</td>
+      <td style="color:var(--amber);font-weight:800">${w.maintenance}</td>
+      <td><span class="chip ${cls}">${pct}%</span></td>
+    </tr>`;
+  }).join('');
+  // Services issues
+  const si = document.getElementById('ds-svc-issues');
+  if(si){
+    const issues = services.filter(s=>s.status!=='operational'&&s.status!=='adequate');
+    si.innerHTML = issues.length
+      ? issues.map(s=>`<div class="svc-row"><div class="svc-ico" style="background:${s.bg}">${s.ico}</div><div style="flex:1"><div class="svc-name">${s.name}</div><div class="svc-sub">${s.notes||''}</div></div><span class="chip ${svcCls(s.status)}">${svcLbl(s.status)}</span></div>`).join('')
+      : '<div style="color:var(--g400);font-size:.78rem;padding:8px 0">✓ All services operational</div>';
+  }
+  // Alerts
+  const ap = document.getElementById('ds-alerts-panel');
+  if(ap){
+    const alerts = buildAlerts();
+    ap.innerHTML = alerts.length
+      ? alerts.map(a=>`<div class="ab ${a.type}" style="margin-bottom:6px"><span class="ab-ico">${a.ico}</span><div><div class="ab-title">${a.title}</div><div class="ab-body">${a.body}</div></div></div>`).join('')
+      : '<div class="ab g"><span class="ab-ico">✅</span><div><div class="ab-title">All Clear</div><div class="ab-body">No critical alerts</div></div></div>';
+  }
+  // Incidents mini
+  const ip = document.getElementById('ds-inc-panel');
+  if(ip){
+    const latest = incidents.slice(0,5);
+    ip.innerHTML = latest.length
+      ? latest.map(i=>`<div class="inc-card" style="margin-bottom:6px">
+          <div class="inc-hdr"><span class="inc-type">${i.type}</span><span class="sev-badge ${sevCls(i.severity)}">${i.severity?.toUpperCase()}</span></div>
+          <div class="inc-meta">${i.anonymous?'🔒 Anonymous':'👤 '+i.reporter} · ${i.location||'—'} · ${timeAgo(i.submitted)}</div>
+          <div class="inc-body" style="font-size:.7rem">${i.description.substring(0,100)}${i.description.length>100?'…':''}</div>
+        </div>`).join('')
+      : '<div style="color:var(--g400);font-size:.78rem">No incidents recorded</div>';
+  }
+}
+
+function admRenderBeds(){
+  const tb = document.getElementById('ds-beds-tbody');
+  if(!tb) return;
+  tb.innerHTML = wards.map(w=>{
+    const total = w.available+w.occupied+w.maintenance+w.quarantine;
+    const pct   = total?Math.round((w.occupied/total)*100):0;
+    const cls   = pct>90?'r':pct>70?'a':'g';
+    return `<tr>
+      <td><strong>${w.ico} ${w.name}</strong></td>
+      <td style="color:var(--green);font-weight:800">${w.available}</td>
+      <td style="color:var(--red);font-weight:800">${w.occupied}</td>
+      <td style="color:var(--amber)">${w.maintenance}</td>
+      <td style="color:var(--purple)">${w.quarantine}</td>
+      <td style="font-weight:700">${total}</td>
+      <td><span class="chip ${cls}">${pct}%</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function admRenderServices(){
+  const tb = document.getElementById('ds-svc-tbody');
+  if(!tb) return;
+  tb.innerHTML = services.map(s=>`<tr>
+    <td><span style="font-size:1rem;margin-right:6px">${s.ico}</span><strong>${s.name}</strong></td>
+    <td><span class="chip ${svcCls(s.status)}">${svcLbl(s.status)}</span></td>
+    <td style="color:var(--g400);font-size:.72rem">${s.notes||'—'}</td>
+  </tr>`).join('');
+}
+
+function admRenderFaults(){
+  const el = document.getElementById('ds-fault-panel');
+  if(!el) return;
+  const openF = faults.filter(f=>f.status==='open');
+  el.innerHTML = openF.length
+    ? openF.map(f=>`<div class="inc-card" style="margin-bottom:8px">
+        <div class="inc-hdr"><span class="inc-type">🔧 ${f.equipment}</span><span class="sev-badge ${sevCls(f.severity)}">${f.severity?.toUpperCase()}</span></div>
+        <div class="inc-meta">📍 ${f.location||'—'} · ${timeAgo(f.reported_at)} · By ${f.reported_by}</div>
+        <div class="inc-body">${f.description}</div>
+        <div style="margin-top:8px;display:flex;gap:6px">
+          <button onclick="faults.find(x=>x.id==='${f.id}').status='resolved';toast('✅ Marked resolved');admRenderFaults();" style="padding:4px 10px;border-radius:6px;border:1px solid var(--green);background:#dcfce7;color:var(--green);font-size:.65rem;font-weight:700;cursor:pointer">✅ Mark Resolved</button>
+        </div>
+      </div>`).join('')
+    : '<div style="color:var(--g400);font-size:.78rem;text-align:center;padding:16px">✓ No open fault reports</div>';
+}
+
+function admRenderIncidents(){
+  const typeF = document.getElementById('ds-inc-type-f')?.value||'';
+  const sevF  = document.getElementById('ds-inc-sev-f')?.value||'';
+  const statF = document.getElementById('ds-inc-stat-f')?.value||'';
+  let filtered = incidents.filter(i=>
+    (!typeF || i.type===typeF) &&
+    (!sevF  || i.severity===sevF) &&
+    (!statF || i.status===statF)
+  );
+  const el = document.getElementById('ds-inc-tbody');
+  if(!el) return;
+  el.innerHTML = filtered.length
+    ? filtered.map(i=>`
+      <div class="inc-card" style="margin-bottom:8px">
+        <div class="inc-hdr">
+          <span class="inc-type">${i.type}</span>
+          <div style="display:flex;gap:6px;align-items:center">
+            <span class="sev-badge ${sevCls(i.severity)}">${i.severity?.toUpperCase()}</span>
+            <span class="chip ${i.status==='open'?'r':i.status==='review'?'a':'g'}" style="font-size:.6rem">${i.status?.toUpperCase()}</span>
+          </div>
+        </div>
+        <div class="inc-meta">${i.anonymous?'🔒 Anonymous':'👤 '+i.reporter+(i.staff_id?' ('+i.staff_id+')':'')} · 📍 ${i.location||'—'} · ${timeAgo(i.submitted)} · Ref: <strong style="font-family:var(--mono);font-size:.62rem">${i.id}</strong></div>
+        <div class="inc-body">${i.description}</div>
+        ${i.actions?`<div style="margin-top:6px;font-size:.7rem;color:var(--g500)"><strong>Actions taken:</strong> ${i.actions}</div>`:''}
+        ${i.prevention?`<div style="font-size:.7rem;color:var(--g500)"><strong>Prevention:</strong> ${i.prevention}</div>`:''}
+        <div style="margin-top:8px;display:flex;gap:6px">
+          <button onclick="incSetStatus('${i.id}','review');admRenderIncidents();" style="padding:4px 10px;border-radius:6px;border:1px solid var(--amber);background:#fef3c7;color:#92400e;font-size:.65rem;font-weight:700;cursor:pointer">Under Review</button>
+          <button onclick="incSetStatus('${i.id}','closed');admRenderIncidents();" style="padding:4px 10px;border-radius:6px;border:1px solid var(--green);background:#dcfce7;color:var(--green);font-size:.65rem;font-weight:700;cursor:pointer">Close</button>
+        </div>
+      </div>`).join('')
+    : '<div style="color:var(--g400);font-size:.78rem;text-align:center;padding:16px">No incidents match filters</div>';
+}
+
+function admExportCSV(){
+  const rows = [['Ward','Available','Occupied','Maintenance','Quarantine','Total','Utilisation%']];
+  wards.forEach(w=>{
+    const total=w.available+w.occupied+w.maintenance+w.quarantine;
+    const util=total?Math.round((w.occupied/total)*100):0;
+    rows.push([w.name,w.available,w.occupied,w.maintenance,w.quarantine,total,util+'%']);
+  });
+  const csv = rows.map(r=>r.join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download = 'BedSync-Report-'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+  toast('📄 CSV exported');
+}
+
+// ── Hook desktop into loadAdminHome ──
+const _origLoadAdminHome = loadAdminHome;
+window.loadAdminHome = function(){
+  _origLoadAdminHome();
+  if(isDesktop()){
+    admActivateDesktop();
+    const mob = document.getElementById('adm-mob-hdr');
+    const mbs = document.getElementById('adm-mob-scroll');
+    const mbb = document.getElementById('adm-mob-bnav');
+    if(mob) mob.style.display='none';
+    if(mbs) mbs.style.display='none';
+    if(mbb) mbb.style.display='none';
+  } else {
+    document.body.classList.remove('desktop-mode');
+  }
+};
+
+window.addEventListener('resize',()=>{
+  if(currentRole==='admin' && document.getElementById('scr-admin-home')?.classList.contains('active')){
+    loadAdminHome();
+  }
+});
+
+// ══════════════════════════════════════════════════════
+// INLINE SERVICE WORKER — offline support
+// ══════════════════════════════════════════════════════
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    const swCode = `
+const CACHE='bedsync-v1';
+self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll([self.location.pathname||'/'])).then(()=>self.skipWaiting())));
+self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
+self.addEventListener('fetch',e=>{
+  if(e.request.url.includes('firebaseio.com')||e.request.url.includes('googleapis.com')){e.respondWith(fetch(e.request).catch(()=>new Response('',{status:503})));return;}
+  e.respondWith(caches.match(e.request).then(c=>c||fetch(e.request).catch(()=>new Response('Offline',{status:503}))));
+});`;
+    const blob = new Blob([swCode],{type:'application/javascript'});
+    navigator.serviceWorker.register(URL.createObjectURL(blob),{scope:'/'})
+      .then(()=>console.log('✅ BedSync SW registered'))
+      .catch(e=>console.warn('SW:',e));
+    function updateBanner(){
+      let b=document.getElementById('bs-offline-banner');
+      if(!navigator.onLine){
+        if(!b){b=document.createElement('div');b.id='bs-offline-banner';b.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;padding:8px 16px;border-radius:20px;font-size:.72rem;font-weight:700;z-index:9998;box-shadow:0 4px 16px rgba(0,0,0,.3)';b.textContent='📴 Offline — showing cached data';document.body.appendChild(b);}
+      } else { if(b) b.remove(); }
+    }
+    window.addEventListener('online',updateBanner);
+    window.addEventListener('offline',updateBanner);
+  });
+}
+
+// ── SPLASH ──
+setTimeout(() => goScreen('login'), 2400);
+</script>
+</body>
+</html>
