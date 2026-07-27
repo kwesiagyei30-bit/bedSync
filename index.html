@@ -59,15 +59,27 @@ html,body{
 /* ── BOTTOM NAV ── */
 .bnav{
   display:flex; flex-shrink:0;
+  width:100%; /* occupy full width */
   background:#fff;
-  border-top:1px solid var(--g200);
+  border-top:2px solid var(--g100);
   padding-bottom:var(--safe-b);
-  /* Always at very bottom of the flex column — never floats up */
   margin-top:auto; position:relative; z-index:100;
+  box-shadow:0 -4px 20px rgba(0,0,0,.07);
 }
-.bni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px 8px;font-size:.58rem;font-weight:700;color:var(--g400);cursor:pointer;gap:3px;position:relative;transition:color .15s}
+.bni{
+  flex:1; display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  padding:11px 4px 9px;
+  font-size:.7rem; font-weight:800;
+  color:var(--g400); cursor:pointer;
+  gap:4px; position:relative;
+  transition:color .15s, background .15s;
+  min-width:0; /* prevent overflow squishing */
+  letter-spacing:.01em;
+}
+.bni:active { background:var(--g50); }
 .bni.active{color:var(--teal)}
-.bni-ico{font-size:1.2rem;line-height:1}
+.bni-ico{font-size:1.35rem;line-height:1}
 .bni-dot{position:absolute;bottom:6px;width:4px;height:4px;border-radius:50%;background:var(--teal)}
 
 /* ── CARDS ── */
@@ -1021,6 +1033,211 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 
 /* ── Smooth scroll ── */
 .scroll { scroll-behavior: smooth; }
+
+/* ══════════════════════════════════════════════════════
+   LAPTOP LANDSCAPE — Full dashboard layout ≥900px
+   ══════════════════════════════════════════════════════ */
+@media (min-width: 900px) {
+
+  /* ── App background ── */
+  body, #app { background: var(--g100) !important; }
+
+  /* ── All nurse + admin screens go landscape ── */
+  #scr-nurse-home, #scr-nurse-update, #scr-nurse-services,
+  #scr-nurse-incident, #scr-nurse-fault, #scr-nurse-profile,
+  #scr-admin-beds, #scr-admin-services,
+  #scr-admin-incidents, #scr-admin-profile,
+  #scr-ghs-home, #scr-ghs-profile,
+  #scr-incident-public {
+    flex-direction: row !important;
+    overflow: hidden;
+  }
+
+  /* ── Left sidebar for ALL screens on laptop ── */
+  #scr-nurse-home .app-hdr,
+  #scr-nurse-update .app-hdr,
+  #scr-nurse-services .app-hdr,
+  #scr-nurse-incident .app-hdr,
+  #scr-nurse-fault .app-hdr,
+  #scr-nurse-profile .app-hdr,
+  #scr-admin-beds .app-hdr,
+  #scr-admin-services .app-hdr,
+  #scr-admin-incidents .app-hdr,
+  #scr-admin-profile .app-hdr,
+  #scr-ghs-home .app-hdr,
+  #scr-ghs-profile .app-hdr,
+  #scr-incident-public .app-hdr {
+    width: 220px !important;
+    flex-shrink: 0 !important;
+    flex-direction: column !important;
+    height: 100% !important;
+    padding: 24px 16px 20px !important;
+    justify-content: flex-start !important;
+    animation: none !important;
+    border-right: 1px solid rgba(255,255,255,.08);
+  }
+
+  /* Sidebar hdr-row stacks vertically */
+  #scr-nurse-home .app-hdr .hdr-row,
+  #scr-nurse-update .app-hdr .hdr-row,
+  #scr-nurse-services .app-hdr .hdr-row,
+  #scr-nurse-incident .app-hdr .hdr-row,
+  #scr-nurse-fault .app-hdr .hdr-row,
+  #scr-nurse-profile .app-hdr .hdr-row,
+  #scr-admin-beds .app-hdr .hdr-row,
+  #scr-admin-services .app-hdr .hdr-row,
+  #scr-admin-incidents .app-hdr .hdr-row,
+  #scr-admin-profile .app-hdr .hdr-row,
+  #scr-ghs-home .app-hdr .hdr-row,
+  #scr-ghs-profile .app-hdr .hdr-row,
+  #scr-incident-public .app-hdr .hdr-row {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    margin-bottom: 12px !important;
+  }
+
+  /* Sidebar logo */
+  .app-hdr .hdr-logo { margin-bottom: 6px; }
+  .app-hdr .hdr-brand { font-size: 1.3rem !important; }
+  .app-hdr .hdr-dot { width: 36px !important; height: 36px !important; font-size: 1.1rem !important; }
+  .app-hdr .hdr-sub  { font-size: .72rem !important; margin-bottom: 4px !important; opacity: .6; }
+  .app-hdr .hdr-title { font-size: 1rem !important; line-height: 1.3; }
+  .app-hdr .live-badge { margin-top: 12px !important; font-size: .65rem !important; }
+
+  /* Sidebar bnav becomes vertical nav */
+  #scr-nurse-home .bnav,
+  #scr-nurse-update .bnav,
+  #scr-nurse-services .bnav,
+  #scr-nurse-incident .bnav,
+  #scr-nurse-fault .bnav,
+  #scr-nurse-profile .bnav,
+  #scr-admin-beds .bnav,
+  #scr-admin-services .bnav,
+  #scr-admin-incidents .bnav,
+  #scr-admin-profile .bnav,
+  #scr-ghs-home .bnav,
+  #scr-ghs-profile .bnav,
+  #scr-incident-public .bnav {
+    display: none !important; /* hide bottom nav — sidebar IS the nav on laptop */
+  }
+
+  /* Sidebar nav items rendered from quick actions card — we add a laptop-nav div */
+  .laptop-sidebar-nav {
+    display: flex !important;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255,255,255,.1);
+    flex: 1;
+  }
+  .laptop-nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: 10px;
+    font-size: .82rem; font-weight: 700;
+    color: rgba(255,255,255,.6); cursor: pointer;
+    transition: background .12s, color .12s;
+    text-decoration: none;
+  }
+  .laptop-nav-item:hover, .laptop-nav-item.active {
+    background: rgba(255,255,255,.1);
+    color: #fff;
+  }
+  .laptop-nav-item.active { border-left: 3px solid var(--teal); }
+  .laptop-nav-item-ico { font-size: 1.1rem; flex-shrink: 0; }
+
+  /* Logout at bottom of sidebar */
+  .laptop-sidebar-footer {
+    margin-top: auto;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255,255,255,.1);
+  }
+  .laptop-sidebar-footer button {
+    width: 100%; padding: 10px 12px;
+    border-radius: 10px; border: none;
+    background: rgba(255,255,255,.06);
+    color: rgba(255,255,255,.5);
+    font-size: .8rem; font-weight: 700;
+    cursor: pointer; font-family: inherit;
+    text-align: left; transition: background .12s;
+  }
+  .laptop-sidebar-footer button:hover { background: rgba(255,255,255,.12); color: #fff; }
+
+  /* Scroll area takes remaining width */
+  #scr-nurse-home .scroll,
+  #scr-nurse-update .scroll,
+  #scr-nurse-services .scroll,
+  #scr-nurse-incident .scroll,
+  #scr-nurse-fault .scroll,
+  #scr-nurse-profile .scroll,
+  #scr-admin-beds .scroll,
+  #scr-admin-services .scroll,
+  #scr-admin-incidents .scroll,
+  #scr-admin-profile .scroll,
+  #scr-ghs-home .scroll,
+  #scr-ghs-profile .scroll,
+  #scr-incident-public .scroll {
+    padding: 24px 28px 28px !important;
+    background: var(--g50) !important;
+    flex: 1 !important;
+    border-radius: 0 !important;
+  }
+
+  /* Laptop font sizes — large and clear */
+  .hdr-title  { font-size: 1.15rem !important; }
+  .card-title { font-size: 1rem !important; letter-spacing: .04em; }
+  .stat-n     { font-size: 2.8rem !important; }
+  .stat-l     { font-size: .88rem !important; font-weight: 700 !important; }
+  .svc-name   { font-size: 1.05rem !important; }
+  .svc-sub    { font-size: .82rem !important; }
+  .ward-name  { font-size: 1.1rem !important; }
+  .ward-status{ font-size: .8rem !important; }
+  .ws-n       { font-size: 1.8rem !important; }
+  .ws-l       { font-size: .72rem !important; }
+  .set-lbl    { font-size: 1rem !important; }
+  .set-sub    { font-size: .82rem !important; }
+  .inc-type   { font-size: 1.05rem !important; }
+  .inc-body   { font-size: .92rem !important; line-height: 1.6 !important; }
+  .ab-title   { font-size: 1rem !important; }
+  .ab-body    { font-size: .88rem !important; }
+  .btn        { font-size: 1rem !important; padding: 14px !important; border-radius: 12px !important; }
+  .fi         { font-size: 1rem !important; padding: 13px 16px !important; }
+  .fl         { font-size: .88rem !important; margin-bottom: 6px !important; }
+  .chip       { font-size: .78rem !important; padding: 4px 12px !important; }
+  .prof-name  { font-size: 1.5rem !important; }
+  .prof-role  { font-size: .92rem !important; }
+  .prof-ava   { width: 90px !important; height: 90px !important; font-size: 2.4rem !important; margin-bottom: 16px !important; }
+
+  /* 2-column grid for stats on laptop */
+  .stats-row {
+    grid-template-columns: 1fr 1fr 1fr !important;
+    gap: 14px !important;
+  }
+  .stat-box { padding: 20px 12px !important; border-radius: 18px !important; }
+
+  /* Ward cards 2-column on laptop */
+  #scr-nurse-home .scroll > #nh-wards-list,
+  #scr-admin-beds #ab-wards-list {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 14px !important;
+  }
+
+  /* Services list 2-column */
+  #ns-services-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+  #ns-services-list .svc-row { border-bottom: 1px solid var(--g100); padding: 12px 8px; }
+
+  /* Admin incidents 2-col layout */
+  #ai-incidents-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+}
 </style>
 </head>
 <body>
@@ -1407,8 +1624,95 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
       <div class="set-item" onclick="goScreen('nurse-incident')"><div class="set-ico" style="background:#fee2e2">⚠️</div><div><div class="set-lbl">Report Incident</div><div class="set-sub">Clinical incident reporting</div></div><div class="set-arr">›</div></div>
       <div class="dvd"></div>
       <div class="set-item" onclick="goScreen('nurse-fault')"><div class="set-ico" style="background:#fff3cd">🔧</div><div><div class="set-lbl">Report Fault</div><div class="set-sub">Equipment faults</div></div><div class="set-arr">›</div></div>
+      <div class="dvd"></div>
+      <div class="set-item" onclick="loadAccountSetup();goScreen('nurse-account')"><div class="set-ico" style="background:#ede9fe">⚙️</div><div><div class="set-lbl">Account Settings</div><div class="set-sub">Profile photo · Personal details · Password</div></div><div class="set-arr">›</div></div>
     </div>
     <button class="btn btn-ghost" onclick="doLogout()">🚪 Sign Out</button>
+  </div>
+  <div class="bnav">
+    <div class="bni" onclick="goScreen('nurse-home')"><div class="bni-ico">🏠</div>Home</div>
+    <div class="bni" onclick="goScreen('nurse-update')"><div class="bni-ico">🛏</div>Beds</div>
+    <div class="bni" onclick="goScreen('nurse-services')"><div class="bni-ico">⚙️</div>Services</div>
+    <div class="bni" onclick="goScreen('nurse-incident')"><div class="bni-ico">⚠️</div>Incident</div>
+    <div class="bni active" onclick="goScreen('nurse-profile')"><div class="bni-ico">👤</div>Profile<div class="bni-dot"></div></div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════ NURSE — ACCOUNT SETUP ═══════════════════════════════════ -->
+<div id="scr-nurse-account" class="screen">
+  <div class="app-hdr">
+    <div class="hdr-row"><div class="hdr-logo"><div class="hdr-dot">👤</div><div class="hdr-brand">Bed<em>Sync</em></div></div><button onclick="goScreen('nurse-profile')" style="background:rgba(255,255,255,.12);color:#fff;border:none;padding:7px 14px;border-radius:9px;font-weight:700;font-size:.78rem;cursor:pointer">← Back</button></div>
+    <div class="hdr-title">Account Settings</div>
+  </div>
+  <div class="scroll">
+
+    <!-- Profile picture -->
+    <div class="card" style="text-align:center">
+      <div class="card-title">Profile Photo</div>
+      <div style="position:relative;width:90px;height:90px;margin:0 auto 14px">
+        <div id="acct-ava-preview" style="width:90px;height:90px;border-radius:24px;background:var(--teal);display:flex;align-items:center;justify-content:center;font-size:2.2rem;font-weight:900;color:#fff;overflow:hidden">
+          <span id="acct-ava-letter">N</span>
+          <img id="acct-ava-img" style="display:none;width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:24px">
+        </div>
+        <label for="acct-photo-input" style="position:absolute;bottom:-4px;right:-4px;width:28px;height:28px;background:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid #fff;font-size:.85rem">📷</label>
+        <input type="file" id="acct-photo-input" accept="image/*" style="display:none" onchange="acctLoadPhoto(this)">
+      </div>
+      <div style="font-size:.72rem;color:var(--g400)">Tap the camera icon to upload a photo</div>
+    </div>
+
+    <!-- Personal details -->
+    <div class="card">
+      <div class="card-title">Personal Details</div>
+      <div class="fg"><label class="fl">Full Name</label><input class="fi" id="acct-name" type="text" placeholder="Your full name"></div>
+      <div class="fg"><label class="fl">Work Email</label><input class="fi" id="acct-email" type="email" placeholder="your@hospital.gov.gh" readonly style="background:var(--g50);color:var(--g400)"></div>
+      <div class="fg"><label class="fl">Staff ID</label><input class="fi" id="acct-staffid" type="text" placeholder="e.g. GHS-2024-0042"></div>
+      <div class="fg"><label class="fl">Job Title / Role</label><input class="fi" id="acct-jobtitle" type="text" placeholder="e.g. Senior Nursing Officer"></div>
+      <div class="fg"><label class="fl">Ward / Unit</label>
+        <select class="fi" id="acct-ward">
+          <option value="">— Select your ward —</option>
+          <option>Emergency / A&E</option><option>ICU / Intensive Care</option>
+          <option>General Ward (Male)</option><option>General Ward (Female)</option>
+          <option>Maternity / Labour</option><option>Paediatric Ward</option>
+          <option>Surgical Ward</option><option>Medical Ward</option>
+          <option>Orthopaedic Ward</option><option>Psychiatric Ward</option>
+          <option>Burns Unit</option><option>Private Ward</option><option>Other</option>
+        </select>
+      </div>
+      <div class="fg"><label class="fl">Hospital / Facility</label><input class="fi" id="acct-hospital" type="text" placeholder="e.g. Kibi Government Hospital"></div>
+      <div class="fg"><label class="fl">Phone Number</label><input class="fi" id="acct-phone" type="tel" placeholder="+233 ..."></div>
+      <button class="btn btn-teal mt12" onclick="acctSaveDetails()">💾 Save Details</button>
+    </div>
+
+    <!-- Change password -->
+    <div class="card">
+      <div class="card-title">Change Password</div>
+      <div class="fg"><label class="fl">New Password</label>
+        <div style="position:relative;display:flex;align-items:center">
+          <input class="fi" id="acct-pass" type="password" placeholder="Min 6 characters" style="padding-right:44px;width:100%">
+          <button type="button" onclick="togglePwd('acct-pass',this)" style="position:absolute;right:12px;background:none;border:none;cursor:pointer;color:var(--g400);font-size:.95rem">👁</button>
+        </div>
+      </div>
+      <div class="fg"><label class="fl">Confirm New Password</label>
+        <div style="position:relative;display:flex;align-items:center">
+          <input class="fi" id="acct-pass2" type="password" placeholder="Repeat password" style="padding-right:44px;width:100%">
+          <button type="button" onclick="togglePwd('acct-pass2',this)" style="position:absolute;right:12px;background:none;border:none;cursor:pointer;color:var(--g400);font-size:.95rem">👁</button>
+        </div>
+      </div>
+      <button class="btn btn-navy mt8" onclick="acctChangePass()">🔐 Update Password</button>
+    </div>
+
+    <!-- Account info -->
+    <div class="card">
+      <div class="card-title">Account Information</div>
+      <div class="set-item" style="cursor:default"><div class="set-ico" style="background:#f1f5f9">📋</div><div><div class="set-lbl">User ID</div><div class="set-sub" id="acct-uid-display">—</div></div></div>
+      <div class="dvd"></div>
+      <div class="set-item" style="cursor:default"><div class="set-ico" style="background:#dcfce7">✅</div><div><div class="set-lbl">Role</div><div class="set-sub" id="acct-role-display">Nurse / Health Worker</div></div></div>
+      <div class="dvd"></div>
+      <div class="set-item" style="cursor:default"><div class="set-ico" style="background:#dbeafe">📅</div><div><div class="set-lbl">Account Created</div><div class="set-sub" id="acct-created-display">—</div></div></div>
+    </div>
+
+    <button class="btn btn-ghost mt8" onclick="doLogout()" style="color:var(--red);border-color:var(--red)">🚪 Sign Out</button>
   </div>
   <div class="bnav">
     <div class="bni" onclick="goScreen('nurse-home')"><div class="bni-ico">🏠</div>Home</div>
@@ -1818,6 +2122,7 @@ function goScreen(id) {
     s.classList.add('active');
   }
   const loaders = {
+    'nurse-account': loadAccountSetup,
     'nurse-home':     loadNurseHome,
     'nurse-update':   loadNurseUpdate,
     'nurse-services': loadNurseServices,
@@ -2863,6 +3168,117 @@ self.addEventListener('fetch',e=>{
     window.addEventListener('online',updateBanner);
     window.addEventListener('offline',updateBanner);
   });
+}
+
+
+// ═══════════════════════════════════════════════════════
+// ACCOUNT SETUP — profile photo, personal details, password
+// ═══════════════════════════════════════════════════════
+let acctPhotoDataUrl = null;
+
+function loadAccountSetup() {
+  const u = currentUser;
+  if (!u) return;
+  const setVal = (id, v) => { const e = document.getElementById(id); if (e && v) e.value = v; };
+  setVal('acct-name',     u.name || '');
+  setVal('acct-email',    u.email || '');
+  setVal('acct-staffid',  u.staff_id || '');
+  setVal('acct-jobtitle', u.job_title || '');
+  setVal('acct-ward',     u.ward || '');
+  setVal('acct-hospital', u.hospital || '');
+  setVal('acct-phone',    u.phone || '');
+  const setT = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
+  setT('acct-uid-display',     fbUserId ? fbUserId.substring(0,16)+'...' : '—');
+  setT('acct-role-display',    u.role === 'admin' ? 'Hospital Administrator' : u.role === 'ghs' ? 'GHS Officer' : 'Nurse / Health Worker');
+  setT('acct-created-display', u.created_at ? new Date(u.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}) : '—');
+  // Restore avatar
+  const letter = document.getElementById('acct-ava-letter');
+  const img    = document.getElementById('acct-ava-img');
+  if (acctPhotoDataUrl && img) {
+    img.src = acctPhotoDataUrl;
+    img.style.display = 'block';
+    if (letter) letter.style.display = 'none';
+  } else {
+    if (letter) { letter.style.display = 'block'; letter.textContent = (u.name || u.email || 'N')[0].toUpperCase(); }
+    if (img)    img.style.display = 'none';
+  }
+  // Update profile avatars across the app
+  updateNurseProfile();
+}
+
+function acctLoadPhoto(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 3 * 1024 * 1024) { toast('⚠️ Photo must be under 3MB'); return; }
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    acctPhotoDataUrl = e.target.result;
+    const img    = document.getElementById('acct-ava-img');
+    const letter = document.getElementById('acct-ava-letter');
+    if (img)    { img.src = acctPhotoDataUrl; img.style.display = 'block'; }
+    if (letter)   letter.style.display = 'none';
+    // Apply to all profile avatars
+    applyPhotoToAvatars(acctPhotoDataUrl);
+    toast('✅ Photo updated');
+  };
+  reader.readAsDataURL(file);
+}
+
+function applyPhotoToAvatars(dataUrl) {
+  // Replace initial-letter avatars with the photo
+  ['np-ava','adp-ava','ghp-ava','adm-desk-ava'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = `<img src="${dataUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">`;
+    el.style.padding = '0';
+    el.style.overflow = 'hidden';
+  });
+}
+
+async function acctSaveDetails() {
+  const name     = document.getElementById('acct-name')?.value.trim();
+  const staffid  = document.getElementById('acct-staffid')?.value.trim();
+  const jobtitle = document.getElementById('acct-jobtitle')?.value.trim();
+  const ward     = document.getElementById('acct-ward')?.value;
+  const hospital = document.getElementById('acct-hospital')?.value.trim();
+  const phone    = document.getElementById('acct-phone')?.value.trim();
+  if (!name) { toast('⚠️ Name cannot be empty'); return; }
+  // Update local user object
+  Object.assign(currentUser, { name, staff_id: staffid, job_title: jobtitle, ward, hospital, phone });
+  // Push to Firebase
+  if (fbUserId) {
+    try {
+      await FBDB.patch(`users/${fbUserId}`, { name, staff_id: staffid, job_title: jobtitle, ward, hospital, phone });
+    } catch(e) { /* saved locally */ }
+  }
+  // Refresh profile displays
+  updateNurseProfile();
+  updateAdminProfile();
+  toast('✅ Details saved successfully');
+}
+
+async function acctChangePass() {
+  const p1 = document.getElementById('acct-pass')?.value;
+  const p2 = document.getElementById('acct-pass2')?.value;
+  if (!p1 || p1.length < 6) { toast('⚠️ Password must be at least 6 characters'); return; }
+  if (p1 !== p2) { toast('⚠️ Passwords do not match'); return; }
+  // Firebase password update via REST API
+  if (!fbIdToken) { toast('⚠️ Please log in again to change password'); return; }
+  try {
+    const r = await fetch(
+      `https://identitytoolkit.googleapis.com/v1/accounts:update?key=${FB_KEY}`,
+      { method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ idToken: fbIdToken, password: p1, returnSecureToken: true }) }
+    );
+    const d = await r.json();
+    if (d.error) throw new Error(d.error.message);
+    fbIdToken = d.idToken; // refresh token
+    document.getElementById('acct-pass').value  = '';
+    document.getElementById('acct-pass2').value = '';
+    toast('🔐 Password updated successfully');
+  } catch(e) {
+    toast('❌ ' + (e.message || 'Failed to update password'));
+  }
 }
 
 // ── SPLASH ──
