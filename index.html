@@ -89,9 +89,9 @@ html,body{
 
 /* ── STAT BOXES ── */
 .stats-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px}
-.stat-box{background:#fff;border-radius:12px;padding:12px 8px;text-align:center;border:1px solid var(--g100)}
+.stat-box{background:#fff;border-radius:12px;padding:12px 8px;text-align:center;border:1px solid var(--g100);min-width:0;overflow:hidden}
 .stat-n{font-size:1.6rem;font-weight:800;line-height:1;margin-bottom:2px}
-.stat-l{font-size:.6rem;color:var(--g400);font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.stat-l{font-size:.6rem;color:var(--g400);font-weight:600;letter-spacing:.02em;text-transform:uppercase;white-space:normal;word-break:break-word;line-height:1.2}
 .stat-n.green{color:var(--green)}.stat-n.red{color:var(--red)}.stat-n.amber{color:var(--amber)}.stat-n.teal{color:var(--teal)}.stat-n.navy{color:var(--navy)}
 
 /* ── WARD CARD ── */
@@ -101,12 +101,12 @@ html,body{
 .ward-name{font-size:.88rem;font-weight:800;color:#fff;flex:1}
 .ward-status{font-size:.65rem;color:rgba(255,255,255,.5)}
 .ward-body{padding:12px 14px}
-.ward-stat-row{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-bottom:8px}
-.ws-box{text-align:center;padding:8px 4px;border-radius:8px}
+.ward-stat-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-bottom:8px}
+.ws-box{text-align:center;padding:8px 4px;border-radius:8px;min-width:0;overflow:hidden}
 .ws-box.avail{background:#dcfce7}.ws-box.occup{background:#fee2e2}.ws-box.maint{background:#fef3c7}.ws-box.quar{background:#ede9fe}
 .ws-n{font-size:1.2rem;font-weight:800;line-height:1;margin-bottom:2px}
 .ws-n.avail{color:var(--green)}.ws-n.occup{color:var(--red)}.ws-n.maint{color:var(--amber)}.ws-n.quar{color:var(--purple)}
-.ws-l{font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;opacity:.7}
+.ws-l{font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.02em;opacity:.7;white-space:normal;word-break:break-word;line-height:1.2}
 .meter-row{margin-top:4px}
 .meter{height:6px;background:var(--g100);border-radius:3px;overflow:hidden;margin-top:2px}
 .meter-fill{height:100%;border-radius:3px;transition:width .6s cubic-bezier(.22,1,.36,1)}
@@ -250,7 +250,7 @@ select.fi{appearance:none;cursor:pointer}
 .prof-role{font-size:.72rem;color:var(--g400);text-align:center;margin-top:2px}
 
 @keyframes qsPop{from{opacity:0;transform:scale(.88)}to{opacity:1;transform:scale(1)}}
-.sev-btn{padding:10px 6px;border-radius:10px;border:2px solid var(--g200);background:var(--g50);font-size:.68rem;font-weight:800;cursor:pointer;font-family:var(--font);transition:border-color .15s,opacity .15s;animation:qsPop .25s cubic-bezier(.34,1.56,.64,1) both}
+.sev-btn{padding:10px 4px;border-radius:10px;border:2px solid var(--g200);background:var(--g50);font-size:.68rem;font-weight:800;cursor:pointer;font-family:var(--font);transition:border-color .15s,opacity .15s;animation:qsPop .25s cubic-bezier(.34,1.56,.64,1) both;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
 .sev-btn.active-low{border-color:var(--green);background:#dcfce7;color:var(--green)}
 .sev-btn.active-medium{border-color:var(--amber);background:#fef3c7;color:#92400e}
 .sev-btn.active-high{border-color:var(--red);background:#fee2e2;color:var(--red)}
@@ -983,8 +983,14 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .fi         { font-size: 1rem !important; padding: 13px 16px !important; }
   .scroll     { padding: 20px 24px calc(var(--safe-b) + 84px) !important; }
 
-  /* Ward cards + services 2-column for better use of width */
-  #nh-wards-list, #ab-wards-list {
+  /* Nurse portal stays single-column and vertical on every screen
+     size — bigger fonts and comfortable spacing, but no landscape
+     re-flow, exactly as requested. Admin's dedicated dashboard
+     (separate system below) is the only landscape view. */
+  #nh-wards-list {
+    display: flex !important; flex-direction: column !important; gap: 14px !important;
+  }
+  #ab-wards-list {
     display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 14px !important;
   }
 
@@ -992,6 +998,16 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   body.desktop-mode #scr-admin-home { max-width: 100% !important; margin: 0 !important; }
 }
 
+
+/* ══════════════════════════════════════════════════════
+   UNIVERSAL GRID SAFETY NET
+   Prevents any current or future 4-column grid from
+   overflowing when a label is long — the exact bug that
+   cut off "Quarantine". Direct children of any grid
+   container are never allowed to force extra width.
+   ══════════════════════════════════════════════════════ */
+[style*="display:grid"] > *,
+[style*="display: grid"] > * { min-width: 0; }
 </style>
 </head>
 <body>
@@ -1422,6 +1438,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
       <div class="fg"><label class="fl">Work Email</label><input class="fi" id="acct-email" type="email" placeholder="your@hospital.gov.gh" readonly style="background:var(--g50);color:var(--g400)"></div>
       <div class="fg"><label class="fl">Staff ID</label><input class="fi" id="acct-staffid" type="text" placeholder="e.g. GHS-2024-0042"></div>
       <div class="fg"><label class="fl">Job Title / Role</label><input class="fi" id="acct-jobtitle" type="text" placeholder="e.g. Senior Nursing Officer"></div>
+      <div class="fg"><label class="fl">Portal Access Level</label><div class="fi" style="background:var(--g50);color:var(--g500);display:flex;align-items:center;justify-content:space-between"><span id="acct-role-fixed">Nurse / Health Worker</span><span style="font-size:.68rem;color:var(--g400)">Contact admin to change</span></div></div>
       <div class="fg"><label class="fl">Ward / Unit</label>
         <select class="fi" id="acct-ward">
           <option value="">— Select your ward —</option>
@@ -1882,7 +1899,7 @@ function goScreen(id) {
       return;
     }
     // ── ROLE GUARD ──
-    const role = currentUser.role;
+    const role = String(currentUser.role || 'nurse').trim().toLowerCase();
     if (role === 'nurse' && !NURSE_SCREENS.includes(id)) {
       toast('⚠️ Access restricted to your role');
       return;
@@ -2031,21 +2048,25 @@ async function doLogin() {
     // Load user profile from database
     const profile = await FBDB.get(`users/${fbUserId}`);
     if (profile && profile.role) {
-      currentUser = { ...profile, email };
-      currentRole = profile.role;
+      // Normal case — role was saved at registration. Trust it exactly.
+      const cleanRole = String(profile.role).trim().toLowerCase();
+      currentUser = { ...profile, email, role: cleanRole };
+      currentRole = cleanRole;
     } else {
-      // Auto-detect role from email as fallback
-      let role = 'nurse';
-      if (email.includes('admin') || email.includes('director') || email.includes('matron')) role = 'admin';
-      else if (email.includes('ghs') || email.includes('health.gov') || email.includes('district')) role = 'ghs';
+      // No saved role found (older/incomplete account). Default to the
+      // SAFEST option — Nurse — never guess a higher-privilege role
+      // from the email text. This is fixed permanently in Firebase
+      // the moment we detect it, so it never happens again for this account.
       currentUser = {
-        email, role,
+        email, role: 'nurse',
         name: email.split('@')[0].replace(/[._]/g,' ').replace(/\b\w/g,c=>c.toUpperCase()),
         hospital: 'Kibi Government Hospital',
         ward: 'General',
         staff_id: ''
       };
-      currentRole = role;
+      currentRole = 'nurse';
+      try { await FBDB.patch(`users/${fbUserId}`, currentUser); } catch(e) {}
+      toast('ℹ️ No role was set on this account — defaulted to Nurse. An administrator can change this in your profile.');
     }
     toast('✅ Welcome back, ' + (currentUser.name || email));
     routeToRole(currentRole);
@@ -2063,7 +2084,7 @@ async function doLogin() {
 async function doRegister() {
   const name    = document.getElementById('rg-name').value.trim();
   const email   = document.getElementById('rg-email').value.trim();
-  const role    = document.getElementById('rg-role').value;
+  const role    = document.getElementById('rg-role').value.trim().toLowerCase();
   const hosp    = document.getElementById('rg-hospital').value.trim();
   const ward    = document.getElementById('rg-ward').value;
   const staffId = document.getElementById('rg-staffid').value.trim();
@@ -2978,6 +2999,7 @@ function loadAccountSetup() {
   const setT = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
   setT('acct-uid-display',     fbUserId ? fbUserId.substring(0,16)+'...' : '—');
   setT('acct-role-display',    u.role === 'admin' ? 'Hospital Administrator' : u.role === 'ghs' ? 'GHS Officer' : 'Nurse / Health Worker');
+  setT('acct-role-fixed',      u.role === 'admin' ? 'Hospital Administrator' : u.role === 'ghs' ? 'GHS Officer' : 'Nurse / Health Worker');
   setT('acct-created-display', u.created_at ? new Date(u.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}) : '—');
   // Restore avatar
   const letter = document.getElementById('acct-ava-letter');
