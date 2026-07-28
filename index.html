@@ -1412,7 +1412,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 <!-- ═══════════════════════════════════ NURSE — ACCOUNT SETUP ═══════════════════════════════════ -->
 <div id="scr-nurse-account" class="screen">
   <div class="app-hdr">
-    <div class="hdr-row"><div class="hdr-logo"><div class="hdr-dot">👤</div><div class="hdr-brand">Bed<em>Sync</em></div></div><button onclick="goScreen('nurse-profile')" style="background:rgba(255,255,255,.12);color:#fff;border:none;padding:7px 14px;border-radius:9px;font-weight:700;font-size:.78rem;cursor:pointer">← Back</button></div>
+    <div class="hdr-row"><div class="hdr-logo"><div class="hdr-dot">👤</div><div class="hdr-brand">Bed<em>Sync</em></div></div><button onclick="acctGoBack()" style="background:rgba(255,255,255,.12);color:#fff;border:none;padding:7px 14px;border-radius:9px;font-weight:700;font-size:.78rem;cursor:pointer">← Back</button></div>
     <div class="hdr-title">Account Settings</div>
   </div>
   <div class="scroll">
@@ -1438,7 +1438,14 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
       <div class="fg"><label class="fl">Work Email</label><input class="fi" id="acct-email" type="email" placeholder="your@hospital.gov.gh" readonly style="background:var(--g50);color:var(--g400)"></div>
       <div class="fg"><label class="fl">Staff ID</label><input class="fi" id="acct-staffid" type="text" placeholder="e.g. GHS-2024-0042"></div>
       <div class="fg"><label class="fl">Job Title / Role</label><input class="fi" id="acct-jobtitle" type="text" placeholder="e.g. Senior Nursing Officer"></div>
-      <div class="fg"><label class="fl">Portal Access Level</label><div class="fi" style="background:var(--g50);color:var(--g500);display:flex;align-items:center;justify-content:space-between"><span id="acct-role-fixed">Nurse / Health Worker</span><span style="font-size:.68rem;color:var(--g400)">Contact admin to change</span></div></div>
+      <div class="fg"><label class="fl">Portal Access Level</label>
+        <select class="fi" id="acct-role-select">
+          <option value="nurse">Nurse / Health Worker</option>
+          <option value="admin">Hospital Administrator</option>
+          <option value="ghs">Ghana Health Service Officer</option>
+        </select>
+        <button class="btn btn-navy mt8" onclick="acctSaveRole()" style="font-size:.85rem;padding:11px">🔄 Update Access Level &amp; Reload Menu</button>
+      </div>
       <div class="fg"><label class="fl">Ward / Unit</label>
         <select class="fi" id="acct-ward">
           <option value="">— Select your ward —</option>
@@ -1762,6 +1769,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
       <div class="set-item" onclick="goScreen('admin-services')"><div class="set-ico" style="background:#f1f5f9">⚙️</div><div><div class="set-lbl">Services &amp; Maintenance</div><div class="set-sub">Equipment status and faults</div></div><div class="set-arr">›</div></div>
       <div class="dvd"></div>
       <div class="set-item" onclick="goScreen('admin-incidents')"><div class="set-ico" style="background:#fee2e2">⚠️</div><div><div class="set-lbl">Clinical Incidents</div><div class="set-sub">All incident reports</div></div><div class="set-arr">›</div></div>
+      <div class="dvd"></div>
+      <div class="set-item" onclick="loadAccountSetup();goScreen('nurse-account')"><div class="set-ico" style="background:#ede9fe">⚙️</div><div><div class="set-lbl">Account Settings</div><div class="set-sub">Profile photo · Personal details · Access level</div></div><div class="set-arr">›</div></div>
     </div>
     <button class="btn btn-ghost" onclick="doLogout()">🚪 Sign Out</button>
   </div>
@@ -1831,6 +1840,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
       <div class="card-title">Access Level</div>
       <div class="ab g" style="margin-bottom:0"><span class="ab-ico">✅</span><div><div class="ab-title">Full Read Access</div><div class="ab-body">You have read access to all hospital data, all wards, all services, and all incident reports. Incident reports visible to GHS are de-identified where anonymous.</div></div></div>
     </div>
+    <div class="card">
+      <div class="card-title">Account</div>
+      <div class="set-item" onclick="loadAccountSetup();goScreen('nurse-account')"><div class="set-ico" style="background:#ede9fe">⚙️</div><div><div class="set-lbl">Account Settings</div><div class="set-sub">Profile photo · Personal details · Access level</div></div><div class="set-arr">›</div></div>
+    </div>
     <button class="btn btn-ghost mt12" onclick="doLogout()">🚪 Sign Out</button>
   </div>
   <div class="bnav">
@@ -1899,6 +1912,10 @@ function goScreen(id) {
       return;
     }
     // ── ROLE GUARD ──
+    // Account Settings is available to every signed-in role —
+    // it's the one place a wrong role can be self-corrected,
+    // so it must never be blocked by the role check below.
+    if (id === 'nurse-account') { _showScreen(id); return; }
     const role = String(currentUser.role || 'nurse').trim().toLowerCase();
     if (role === 'nurse' && !NURSE_SCREENS.includes(id)) {
       toast('⚠️ Access restricted to your role');
@@ -2985,9 +3002,47 @@ self.addEventListener('fetch',e=>{
 // ═══════════════════════════════════════════════════════
 let acctPhotoDataUrl = null;
 
+
+// ═══════════════════════════════════════════════════════
+// FIX A MIS-SET ROLE — instantly, from inside the app.
+// Corrects the account's role in Firebase and immediately
+// re-routes to the correct portal. No Firebase Console,
+// no re-registering, no waiting.
+// ═══════════════════════════════════════════════════════
+async function acctSaveRole() {
+  const sel = document.getElementById('acct-role-select');
+  const newRole = sel?.value;
+  if (!newRole) return;
+
+  currentUser.role = newRole;
+  currentRole = newRole;
+
+  if (fbUserId) {
+    try { await FBDB.patch(`users/${fbUserId}`, { role: newRole }); }
+    catch(e) { /* still applies locally for this session */ }
+  }
+
+  toast('✅ Access level updated — opening ' +
+    (newRole === 'admin' ? 'Administrator' : newRole === 'ghs' ? 'GHS' : 'Nurse') +
+    ' portal...');
+
+  setTimeout(() => routeToRole(newRole), 600);
+}
+
+function acctGoBack() {
+  const role = String(currentUser?.role || 'nurse').toLowerCase();
+  if (role === 'admin') goScreen('admin-profile');
+  else if (role === 'ghs') goScreen('ghs-profile');
+  else goScreen('nurse-profile');
+}
+
 function loadAccountSetup() {
   const u = currentUser;
   if (!u) return;
+  // The bottom nav on this screen is nurse-specific — only show it
+  // for nurse accounts. Admins and GHS officers use the Back button.
+  const acctBnav = document.getElementById('acct-bnav');
+  if (acctBnav) acctBnav.style.display = (u.role === 'nurse') ? 'flex' : 'none';
   const setVal = (id, v) => { const e = document.getElementById(id); if (e && v) e.value = v; };
   setVal('acct-name',     u.name || '');
   setVal('acct-email',    u.email || '');
@@ -2999,7 +3054,8 @@ function loadAccountSetup() {
   const setT = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
   setT('acct-uid-display',     fbUserId ? fbUserId.substring(0,16)+'...' : '—');
   setT('acct-role-display',    u.role === 'admin' ? 'Hospital Administrator' : u.role === 'ghs' ? 'GHS Officer' : 'Nurse / Health Worker');
-  setT('acct-role-fixed',      u.role === 'admin' ? 'Hospital Administrator' : u.role === 'ghs' ? 'GHS Officer' : 'Nurse / Health Worker');
+  const roleSel = document.getElementById('acct-role-select');
+  if (roleSel) roleSel.value = (u.role || 'nurse').toLowerCase();
   setT('acct-created-display', u.created_at ? new Date(u.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}) : '—');
   // Restore avatar
   const letter = document.getElementById('acct-ava-letter');
