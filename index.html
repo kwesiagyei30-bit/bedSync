@@ -3093,35 +3093,19 @@ async function acctChangePass() {
 
 
 // ═══════════════════════════════════════════════════════
-// AUTO-LOGOUT ON APP CLOSE
-// Session lives only in memory — closing the tab/app
-// or refreshing clears it. No persistent login.
-// ═══════════════════════════════════════════════════════
-window.addEventListener('beforeunload', () => {
-  currentUser = null;
-  currentRole = null;
-  fbUserId = null;
-  fbIdToken = null;
-});
-window.addEventListener('pagehide', () => {
-  currentUser = null;
-  currentRole = null;
-});
-// Also catch mobile app backgrounding for extended periods
-let _hiddenAt = null;
-document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'hidden') {
-    _hiddenAt = Date.now();
-  } else if (document.visibilityState === 'visible' && _hiddenAt) {
-    const awayMs = Date.now() - _hiddenAt;
-    // If app was backgrounded for more than 15 minutes, force logout
-    if (awayMs > 15 * 60 * 1000 && currentUser) {
-      doLogout();
-      toast('🔒 Session expired — please sign in again');
-    }
-    _hiddenAt = null;
-  }
-});
+// SESSION LIFETIME
+// The session (currentUser) lives only in this page's JS
+// memory — it is never written to localStorage or any
+// persistent storage. Closing the tab, closing the app, or
+// refreshing the page discards it automatically, which is
+// exactly the same as being logged out. No extra event
+// handlers are needed for this, and none are used — earlier
+// versions used beforeunload/pagehide/visibilitychange to
+// force this, but mobile and laptop browsers fire those
+// events during completely normal use (tab backgrounding,
+// address bar animations, brief focus loss), which wiped
+// the session while the person was still actively using the
+// app. Removed entirely — this is safer and correct.
 
 // ── SPLASH ──
 setTimeout(() => goScreen('login'), 2400);
