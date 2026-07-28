@@ -1895,40 +1895,20 @@ let isAnon = true;
 let isNurseAnon = false;
 
 // ── SCREEN ROUTER ──
-// ── Screen access control ──
-const PUBLIC_SCREENS  = ['splash','login','register','incident-public'];
-const NURSE_SCREENS   = ['nurse-home','nurse-update','nurse-services',
-                         'nurse-incident','nurse-fault','nurse-profile','nurse-account'];
-const ADMIN_SCREENS   = ['admin-home','admin-beds','admin-services',
-                         'admin-incidents','admin-profile'];
-const GHS_SCREENS     = ['ghs-home','ghs-profile','admin-incidents'];
+// Role-based screen restriction has been switched off at the
+// person's explicit request for today's live demo, after the
+// restriction kept misfiring even on freshly registered
+// accounts. The only rule left is: you must be signed in to
+// reach anything other than the public screens (splash, login,
+// register, the anonymous incident portal). Every logged-in
+// user can now open every menu option with zero exceptions.
+const PUBLIC_SCREENS = ['splash','login','register','incident-public'];
 
 function goScreen(id) {
-  // ── AUTH GUARD ──
-  if (!PUBLIC_SCREENS.includes(id)) {
-    if (!currentUser) {
-      toast('⚠️ Please sign in first');
-      _showScreen('login');
-      return;
-    }
-    // ── ROLE GUARD ──
-    // Account Settings is available to every signed-in role —
-    // it's the one place a wrong role can be self-corrected,
-    // so it must never be blocked by the role check below.
-    if (id === 'nurse-account') { _showScreen(id); return; }
-    const role = String(currentUser.role || 'nurse').trim().toLowerCase();
-    if (role === 'nurse' && !NURSE_SCREENS.includes(id)) {
-      toast('⚠️ Access restricted to your role');
-      return;
-    }
-    if (role === 'admin' && !ADMIN_SCREENS.includes(id) && id !== 'admin-incidents') {
-      toast('⚠️ Access restricted');
-      return;
-    }
-    if (role === 'ghs' && !GHS_SCREENS.includes(id)) {
-      toast('⚠️ Access restricted');
-      return;
-    }
+  if (!PUBLIC_SCREENS.includes(id) && !currentUser) {
+    toast('⚠️ Please sign in first');
+    _showScreen('login');
+    return;
   }
   _showScreen(id);
 }
