@@ -1175,6 +1175,9 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
     </div>
     <!-- All wards summary -->
     <div id="nh-wards-list"></div>
+    <!-- Primary action — the core function of the app. Always
+         visible, always the first thing a nurse can tap. -->
+    <button onclick="goScreen('nurse-update')" style="display:flex;align-items:center;justify-content:center;gap:9px;width:100%;padding:16px;border-radius:14px;border:none;background:var(--teal);color:#fff;font-size:.95rem;font-weight:800;cursor:pointer;font-family:inherit;box-shadow:0 4px 16px rgba(13,115,119,.35);margin-bottom:10px">🛏 Update Bed Count</button>
     <!-- Quick action pills — compact, above the fold -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
       <button onclick="goScreen('nurse-incident')" style="display:flex;align-items:center;gap:7px;padding:11px 12px;border-radius:12px;border:none;background:#fee2e2;color:#b91c1c;font-size:.78rem;font-weight:800;cursor:pointer;font-family:inherit;transition:transform .12s">⚠️ Report Incident</button>
@@ -2299,9 +2302,13 @@ function loadNurseUpdate() {
   if (sel && sel.options.length <= 1) {
     wards.forEach(w => { const o=document.createElement('option'); o.value=w.id; o.textContent=w.name; sel.appendChild(o); });
   }
-  // Auto-select nurse's own ward
-  const myWard = wards.find(w => currentUser?.ward && w.name.toLowerCase().includes(currentUser.ward.toLowerCase().split(' ')[0]));
-  if (myWard && sel) { sel.value = myWard.id; nuLoadWard(myWard.id); }
+  // Try to match the nurse's own saved ward first...
+  let target = wards.find(w => currentUser?.ward && w.name.toLowerCase().includes(currentUser.ward.toLowerCase().split(' ')[0]));
+  // ...but if there's no match (ward not set, or the names don't
+  // line up), NEVER leave the screen blank — default to the first
+  // ward in the list so the update form is always ready to use.
+  if (!target && wards.length) target = wards[0];
+  if (target && sel) { sel.value = target.id; nuLoadWard(target.id); }
 }
 
 function nuLoadWard(wardId) {
