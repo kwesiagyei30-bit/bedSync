@@ -2031,6 +2031,7 @@ let fbUserId = null;
 let fbIdToken = null;
 
 async function doLogin() {
+  resetSession(); // never trust leftover state from a previous session
   const email = document.getElementById('li-email').value.trim();
   const pass  = document.getElementById('li-pass').value;
   if (!email) { toast('⚠️ Enter your email'); return; }
@@ -2082,6 +2083,7 @@ async function doLogin() {
 }
 
 async function doRegister() {
+  resetSession(); // never trust leftover state from a previous session
   const name    = document.getElementById('rg-name').value.trim();
   const email   = document.getElementById('rg-email').value.trim();
   const role    = document.getElementById('rg-role').value.trim().toLowerCase();
@@ -2135,8 +2137,23 @@ function routeToRole(role) {
   else if (role === 'ghs')   { updateGHSProfile();   goScreen('ghs-home'); }
 }
 
+function resetSession() {
+  currentUser = null;
+  currentRole = null;
+  fbUserId = null;
+  fbIdToken = null;
+  acctPhotoDataUrl = null;
+  document.body.classList.remove('desktop-mode');
+  // Undo any profile photo that was applied to avatars — put the
+  // plain letter-avatar back so nothing carries over visually.
+  ['np-ava','adp-ava','ghp-ava','adm-desk-ava'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.innerHTML = ''; el.style.padding = ''; el.style.overflow = ''; }
+  });
+}
+
 function doLogout() {
-  currentUser = null; currentRole = null;
+  resetSession();
   goScreen('login');
 }
 
@@ -2878,7 +2895,7 @@ function admRenderFaults(){
         <div class="inc-meta">📍 ${f.location||'—'} · ${timeAgo(f.reported_at)} · By ${f.reported_by}</div>
         <div class="inc-body">${f.description}</div>
         <div style="margin-top:8px;display:flex;gap:6px">
-          <button onclick="faults.find(x=>x.id==='${f.id}').status='resolved';toast('✅ Marked resolved');admRenderFaults();" style="padding:4px 10px;border-radius:6px;border:1px solid var(--green);background:#dcfce7;color:var(--green);font-size:.65rem;font-weight:700;cursor:pointer">✅ Mark Resolved</button>
+          <button onclick="const _f=faults.find(x=>x.id==='${f.id}');if(_f){_f.status='resolved';toast('✅ Marked resolved');admRenderFaults();}" style="padding:4px 10px;border-radius:6px;border:1px solid var(--green);background:#dcfce7;color:var(--green);font-size:.65rem;font-weight:700;cursor:pointer">✅ Mark Resolved</button>
         </div>
       </div>`).join('')
     : '<div style="color:var(--g400);font-size:.78rem;text-align:center;padding:16px">✓ No open fault reports</div>';
