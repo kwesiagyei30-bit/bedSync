@@ -1206,7 +1206,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
         <option value="">— Select ward —</option>
       </select>
     </div>
-    <div id="nu-ward-form" style="display:none">
+    <div id="nu-ward-form">
       <div class="card">
         <div class="card-title">Bed Status</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
@@ -2315,32 +2315,42 @@ let nuCurrentWard = null;
 let nuBedCounts = {available:0,occupied:0,maintenance:0,quarantine:0};
 
 function loadNurseUpdate() {
+  // Rebuild the ward list from scratch every single time this
+  // screen opens — never assume it's already populated correctly
+  // from a previous visit. This runs the same way whether it's
+  // the first visit or the fiftieth, on any device.
   const sel = document.getElementById('nu-ward-select');
-  if (sel && sel.options.length <= 1) {
+  if (sel) {
+    sel.innerHTML = '<option value="">— Select ward —</option>';
     wards.forEach(w => { const o=document.createElement('option'); o.value=w.id; o.textContent=w.name; sel.appendChild(o); });
   }
   // Try to match the nurse's own saved ward first...
   let target = wards.find(w => currentUser?.ward && w.name.toLowerCase().includes(currentUser.ward.toLowerCase().split(' ')[0]));
-  // ...but if there's no match (ward not set, or the names don't
-  // line up), NEVER leave the screen blank — default to the first
-  // ward in the list so the update form is always ready to use.
+  // ...but if there's no match at all, never leave the screen
+  // blank — default to the first ward so the form is always ready.
   if (!target && wards.length) target = wards[0];
-  if (target && sel) { sel.value = target.id; nuLoadWard(target.id); }
+  if (target && sel) sel.value = target.id;
+  // Populate the stepper form directly — this no longer depends
+  // on the dropdown's change event or on any earlier step having
+  // succeeded first.
+  if (target) nuLoadWard(target.id);
 }
 
 function nuLoadWard(wardId) {
-  nuCurrentWard = wards.find(w => w.id === wardId);
-  if (!nuCurrentWard) { document.getElementById('nu-ward-form').style.display='none'; return; }
+  nuCurrentWard = wards.find(w => w.id === wardId) || wards[0];
+  if (!nuCurrentWard) return; // no wards exist at all — nothing to show
   nuBedCounts = {
-    available:   nuCurrentWard.available,
-    occupied:    nuCurrentWard.occupied,
-    maintenance: nuCurrentWard.maintenance,
-    quarantine:  nuCurrentWard.quarantine
+    available:   nuCurrentWard.available   || 0,
+    occupied:    nuCurrentWard.occupied    || 0,
+    maintenance: nuCurrentWard.maintenance || 0,
+    quarantine:  nuCurrentWard.quarantine  || 0
   };
   ['available','occupied','maintenance','quarantine'].forEach(k => setEl('sv-'+k, nuBedCounts[k]));
-  document.getElementById('nu-ward-form').style.display = 'block';
   setEl('nu-ward-sub', nuCurrentWard.name);
   nuUpdateTotal();
+  // Keep the ward picker showing the same ward the form reflects
+  const sel = document.getElementById('nu-ward-select');
+  if (sel) sel.value = nuCurrentWard.id;
 }
 
 function stepBed(key, delta) {
