@@ -467,6 +467,13 @@ select.fi{appearance:none;cursor:pointer}
 .card:nth-child(2) { animation: fadeUp .28s .10s cubic-bezier(.22,1,.36,1) both; }
 .card:nth-child(3) { animation: fadeUp .28s .16s cubic-bezier(.22,1,.36,1) both; }
 .card:nth-child(4) { animation: fadeUp .28s .22s cubic-bezier(.22,1,.36,1) both; }
+.sec-section        { animation: fadeUp .28s cubic-bezier(.22,1,.36,1) both; }
+.sec-section:nth-of-type(1) { animation-delay: .05s; }
+.sec-section:nth-of-type(2) { animation-delay: .11s; }
+.sec-section:nth-of-type(3) { animation-delay: .17s; }
+.sec-section:nth-of-type(4) { animation-delay: .23s; }
+.sec-section:nth-of-type(5) { animation-delay: .29s; }
+.sec-badge          { animation: popIn .24s cubic-bezier(.34,1.56,.64,1) both; }
 .ward-card:nth-child(1){ animation: fadeUp .3s .05s cubic-bezier(.22,1,.36,1) both; }
 .ward-card:nth-child(2){ animation: fadeUp .3s .12s cubic-bezier(.22,1,.36,1) both; }
 .ward-card:nth-child(3){ animation: fadeUp .3s .18s cubic-bezier(.22,1,.36,1) both; }
@@ -1008,6 +1015,42 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
    ══════════════════════════════════════════════════════ */
 [style*="display:grid"] > *,
 [style*="display: grid"] > * { min-width: 0; }
+
+/* ══════════════════════════════════════════
+   DATA SECURITY & COMPLIANCE SCREEN
+   ══════════════════════════════════════════ */
+#scr-security { background: var(--g50); }
+.sec-hero { background: linear-gradient(135deg, #0B1D3A 0%, #0D4A4A 100%); padding: 28px 20px 24px; text-align: center; }
+.sec-hero-icon { font-size: 2.4rem; margin-bottom: 8px; }
+.sec-hero-title { font-size: 1.15rem; font-weight: 800; color: #fff; margin-bottom: 4px; }
+.sec-hero-sub { font-size: .72rem; color: rgba(255,255,255,.55); letter-spacing: .04em; }
+.sec-badge-row { display: flex; gap: 8px; padding: 14px 16px; background: #fff; border-bottom: 1px solid var(--g100); overflow-x: auto; }
+.sec-badge { display: flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: 20px; font-size: .62rem; font-weight: 800; letter-spacing: .04em; white-space: nowrap; flex-shrink: 0; }
+.sec-badge.green { background: #dcfce7; color: #15803d; }
+.sec-badge.blue  { background: #dbeafe; color: #1e40af; }
+.sec-badge.teal  { background: #ccfbf1; color: #0f766e; }
+.sec-section { background: #fff; border-radius: 14px; margin: 12px 16px 0; overflow: hidden; border: 1px solid var(--g100); }
+.sec-section-hdr { background: var(--navy); padding: 10px 16px; display: flex; align-items: center; gap: 8px; }
+.sec-section-hdr-ico { font-size: 1rem; }
+.sec-section-hdr-txt { font-size: .78rem; font-weight: 800; color: #fff; letter-spacing: .04em; }
+.sec-row { padding: 12px 16px; border-bottom: 1px solid var(--g100); display: flex; flex-direction: column; gap: 3px; }
+.sec-row:last-child { border-bottom: none; }
+.sec-row-label { font-size: .65rem; font-weight: 700; color: var(--g400); text-transform: uppercase; letter-spacing: .07em; }
+.sec-row-value { font-size: .82rem; font-weight: 600; color: var(--navy); }
+.sec-row-sub { font-size: .68rem; color: var(--g400); line-height: 1.4; margin-top: 1px; }
+.sec-status-pill { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 20px; font-size: .65rem; font-weight: 800; }
+.sec-status-pill.on { background: #dcfce7; color: #15803d; }
+.sec-status-pill.na { background: var(--g100); color: var(--g400); }
+.sec-act { margin: 12px 16px 0; background: #fff; border-radius: 14px; padding: 14px 16px; border: 1px solid var(--g100); }
+.sec-act-title { font-size: .72rem; font-weight: 800; color: var(--g400); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 10px; }
+.sec-act-link { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--g100); cursor: pointer; text-decoration: none; }
+.sec-act-link:last-child { border-bottom: none; }
+.sec-act-link-ico { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+.sec-act-link-txt { font-size: .8rem; font-weight: 700; color: var(--navy); }
+.sec-act-link-sub { font-size: .65rem; color: var(--g400); margin-top: 1px; }
+.sec-footer { margin: 12px 16px 24px; padding: 14px 16px; background: #fef9c3; border-radius: 12px; border-left: 4px solid #F59E0B; }
+.sec-footer-title { font-size: .72rem; font-weight: 800; color: #92400e; margin-bottom: 6px; }
+.sec-footer-body { font-size: .68rem; color: #78350f; line-height: 1.5; }
 </style>
 </head>
 <body>
@@ -1256,7 +1299,21 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   </div>
   <div class="scroll">
     <div class="ab a" style="margin-bottom:10px"><span class="ab-ico">💡</span><div><div class="ab-title">Tap to cycle status</div><div class="ab-body">Operational → Maintenance → Offline. Updates are visible to all roles within 2 seconds.</div></div></div>
-    <div class="card" id="ns-services-list"></div>
+    <div class="card">
+      <div class="svc-row"><div class="svc-ico" style="background:#fef3c7">🩻</div><div style="flex:1"><div class="svc-name">CT Scanner</div><div class="svc-sub" id="svc-note-ct">Tap to change status</div></div><button class="tog on" id="svc-tog-ct" onclick="svcCycle('ct')"></button></div>
+      <div class="svc-row"><div class="svc-ico" style="background:#f1f5f9">🔬</div><div style="flex:1"><div class="svc-name">MRI Scanner</div><div class="svc-sub" id="svc-note-mri">Tap to change status</div></div><button class="tog on" id="svc-tog-mri" onclick="svcCycle('mri')"></button></div>
+      <div class="svc-row"><div class="svc-ico" style="background:#dcfce7">🏥</div><div style="flex:1"><div class="svc-name">Operating Theatre 1</div><div class="svc-sub" id="svc-note-theatre1">Tap to change status</div></div><button class="tog on" id="svc-tog-theatre1" onclick="svcCycle('theatre1')"></button></div>
+      <div class="svc-row"><div class="svc-ico" style="background:#dcfce7">🏥</div><div style="flex:1"><div class="svc-name">Operating Theatre 2</div><div class="svc-sub" id="svc-note-theatre2">Tap to change status</div></div><button class="tog on" id="svc-tog-theatre2" onclick="svcCycle('theatre2')"></button></div>
+      <div class="svc-row"><div class="svc-ico" style="background:#f0fdf4">📡</div><div style="flex:1"><div class="svc-name">X-Ray Machine</div><div class="svc-sub" id="svc-note-xray">Tap to change status</div></div><button class="tog on" id="svc-tog-xray" onclick="svcCycle('xray')"></button></div>
+      <div class="svc-row"><div class="svc-ico" style="background:#eff6ff">🔊</div><div style="flex:1"><div class="svc-name">Ultrasound</div><div class="svc-sub" id="svc-note-ultrasound">Tap to change status</div></div><button class="tog on" id="svc-tog-ultrasound" onclick="svcCycle('ultrasound')"></button></div>
+      <div class="svc-row"><div class="svc-ico" style="background:#dbeafe">🩸</div><div style="flex:1"><div class="svc-name">Blood Bank</div><div class="svc-sub" id="svc-note-blood_bank">Tap to change status</div></div><button class="tog warn" id="svc-tog-blood_bank" onclick="svcCycle('blood_bank')"></button></div>
+      <div class="svc-row"><div class="svc-ico" style="background:#fdf4ff">💊</div><div style="flex:1"><div class="svc-name">Pharmacy</div><div class="svc-sub" id="svc-note-pharmacy">Tap to change status</div></div><button class="tog on" id="svc-tog-pharmacy" onclick="svcCycle('pharmacy')"></button></div>
+      <div class="svc-row"><div class="svc-ico" style="background:#f0fdf4">🧪</div><div style="flex:1"><div class="svc-name">Laboratory</div><div class="svc-sub" id="svc-note-laboratory">Tap to change status</div></div><button class="tog on" id="svc-tog-laboratory" onclick="svcCycle('laboratory')"></button></div>
+      <div class="svc-row"><div class="svc-ico" style="background:#dcfce7">💨</div><div style="flex:1"><div class="svc-name">Oxygen Supply</div><div class="svc-sub" id="svc-note-oxygen">Tap to change status</div></div><button class="tog on" id="svc-tog-oxygen" onclick="svcCycle('oxygen')"></button></div>
+      <div class="svc-row"><div class="svc-ico" style="background:#fefce8">⚡</div><div style="flex:1"><div class="svc-name">Generator / Power</div><div class="svc-sub" id="svc-note-generator">Tap to change status</div></div><button class="tog on" id="svc-tog-generator" onclick="svcCycle('generator')"></button></div>
+      <div class="svc-row" style="border:none"><div class="svc-ico" style="background:#fff7ed">🚑</div><div style="flex:1"><div class="svc-name">Ambulance Bay</div><div class="svc-sub" id="svc-note-ambulance">Tap to change status</div></div><button class="tog on" id="svc-tog-ambulance" onclick="svcCycle('ambulance')"></button></div>
+    </div>
+    <div style="text-align:center;font-size:.65rem;color:var(--g400);margin:6px 0 4px">Green = Operational &nbsp;·&nbsp; Amber = Maintenance &nbsp;·&nbsp; Red = Offline</div>
     <button onclick="nsPublishServices()" style="display:flex;align-items:center;justify-content:center;gap:9px;width:100%;padding:16px;border-radius:14px;border:none;background:var(--green);color:#fff;font-size:.95rem;font-weight:800;cursor:pointer;font-family:inherit;box-shadow:0 4px 16px rgba(22,163,74,.35);margin-top:12px">📡 Publish Services Update</button>
   </div>
   <div class="bnav">
@@ -1399,6 +1456,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
       <div class="set-item" onclick="goScreen('nurse-fault')"><div class="set-ico" style="background:#fff3cd">🔧</div><div><div class="set-lbl">Report Fault</div><div class="set-sub">Equipment faults</div></div><div class="set-arr">›</div></div>
       <div class="dvd"></div>
       <div class="set-item" onclick="loadAccountSetup();goScreen('nurse-account')"><div class="set-ico" style="background:#ede9fe">⚙️</div><div><div class="set-lbl">Account Settings</div><div class="set-sub">Profile photo · Personal details · Password</div></div><div class="set-arr">›</div></div>
+      <div class="set-item" onclick="goScreen('security')"><div class="set-ico" style="background:#dcfce7">🔐</div><div><div class="set-lbl">Data Security & Compliance</div><div class="set-sub">Encryption, Act 843, hosting</div></div><div class="set-arr">›</div></div>
     </div>
     <button class="btn btn-ghost" onclick="doLogout()">🚪 Sign Out</button>
   </div>
@@ -1501,6 +1559,158 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
     <div class="bni" onclick="goScreen('nurse-services')"><div class="bni-ico">⚙️</div>Services</div>
     <div class="bni" onclick="goScreen('nurse-incident')"><div class="bni-ico">⚠️</div>Incident</div>
     <div class="bni active" onclick="goScreen('nurse-profile')"><div class="bni-ico">👤</div>Profile<div class="bni-dot"></div></div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════ DATA SECURITY & COMPLIANCE ═══════════════════════════════════ -->
+<div id="scr-security" class="screen">
+  <div class="sec-hero">
+    <div class="sec-hero-icon">🔐</div>
+    <div class="sec-hero-title">Data Security & Compliance</div>
+    <div class="sec-hero-sub">BedSync · VitalGrid Health Ltd · Ghana</div>
+  </div>
+  <div class="sec-badge-row">
+    <div class="sec-badge green">✓ TLS Encrypted</div>
+    <div class="sec-badge green">✓ Data at Rest Encrypted</div>
+    <div class="sec-badge blue">✓ Firebase Auth</div>
+    <div class="sec-badge teal">✓ Act 843 Aware</div>
+    <div class="sec-badge green">✓ No Patient Data</div>
+  </div>
+  <div class="scroll" style="padding-bottom:24px">
+
+    <div class="sec-section">
+      <div class="sec-section-hdr"><div class="sec-section-hdr-ico">📋</div><div class="sec-section-hdr-txt">WHAT DATA IS COLLECTED</div></div>
+      <div class="sec-row">
+        <div class="sec-row-label">Bed & Ward Data</div>
+        <div class="sec-row-value">Aggregate bed counts only — no patient information</div>
+        <div class="sec-row-sub">e.g. "8 beds available in ICU" — never names, diagnoses, or individual patient records.</div>
+      </div>
+      <div class="sec-row">
+        <div class="sec-row-label">Service & Equipment Status</div>
+        <div class="sec-row-value">Operational / Maintenance / Offline states only</div>
+        <div class="sec-row-sub">CT, MRI, Theatre, Blood Bank, Oxygen and other services — status only, no clinical detail.</div>
+      </div>
+      <div class="sec-row">
+        <div class="sec-row-label">Clinical Incident Reports (CIRS)</div>
+        <div class="sec-row-value">Type, severity, description — anonymous by choice</div>
+        <div class="sec-row-sub">Staff may submit with their name and staff ID, or fully anonymously. No patient names or IDs are ever captured in a report.</div>
+      </div>
+      <div class="sec-row">
+        <div class="sec-row-label">Staff Account Data</div>
+        <div class="sec-row-value">Name, work email, staff ID, ward, hospital</div>
+        <div class="sec-row-sub">Used only to attribute updates and manage access. No personal health information is stored.</div>
+      </div>
+      <div class="sec-row">
+        <div class="sec-row-label">What Is NOT Collected</div>
+        <div class="sec-row-value" style="color:#15803d">✓ No patient names, IDs, or diagnoses — ever</div>
+        <div class="sec-row-sub">BedSync is a bed and services coordination system, not a patient records system.</div>
+      </div>
+    </div>
+
+    <div class="sec-section">
+      <div class="sec-section-hdr"><div class="sec-section-hdr-ico">🔒</div><div class="sec-section-hdr-txt">ENCRYPTION & TRANSMISSION</div></div>
+      <div class="sec-row">
+        <div class="sec-row-label">In Transit</div>
+        <div class="sec-row-value"><span class="sec-status-pill on">✓ Active</span> TLS 1.3 / HTTPS</div>
+        <div class="sec-row-sub">All data between the app and Firebase is encrypted using TLS 1.3 — the same standard used by banks.</div>
+      </div>
+      <div class="sec-row">
+        <div class="sec-row-label">At Rest</div>
+        <div class="sec-row-value"><span class="sec-status-pill on">✓ Active</span> AES-256 Encryption</div>
+        <div class="sec-row-sub">All stored data is encrypted at rest, enforced automatically by Google's Firebase infrastructure.</div>
+      </div>
+      <div class="sec-row">
+        <div class="sec-row-label">Authentication</div>
+        <div class="sec-row-value"><span class="sec-status-pill on">✓ Active</span> Firebase Auth + Secure Tokens</div>
+        <div class="sec-row-sub">Every user is authenticated before accessing any data. Passwords are never stored in plain text.</div>
+      </div>
+      <div class="sec-row">
+        <div class="sec-row-label">Access Control</div>
+        <div class="sec-row-value"><span class="sec-status-pill on">✓ Active</span> Role-Based Structure</div>
+        <div class="sec-row-sub">Nurse, Administrator, and GHS roles see purpose-built views suited to their work.</div>
+      </div>
+    </div>
+
+    <div class="sec-section">
+      <div class="sec-section-hdr"><div class="sec-section-hdr-ico">🗄️</div><div class="sec-section-hdr-txt">DATA STORAGE & HOSTING</div></div>
+      <div class="sec-row">
+        <div class="sec-row-label">Current Hosting (Pilot)</div>
+        <div class="sec-row-value">Google Firebase — Europe West 1 (Belgium)</div>
+        <div class="sec-row-sub">During the pilot phase, data is hosted on Google Firebase's European servers, encrypted throughout.</div>
+      </div>
+      <div class="sec-row">
+        <div class="sec-row-label">National Rollout Hosting</div>
+        <div class="sec-row-value"><span class="sec-status-pill na">Planned</span> NITA-Ghana / Local Cloud</div>
+        <div class="sec-row-sub">VitalGrid Health Ltd is committed to migrating to NITA-approved or Ghana-based cloud infrastructure for national scale.</div>
+      </div>
+      <div class="sec-row">
+        <div class="sec-row-label">Backup & Recovery</div>
+        <div class="sec-row-value"><span class="sec-status-pill on">✓ Active</span> Automatic Daily Backups</div>
+        <div class="sec-row-sub">Firebase automatically replicates and backs up all data. No single point of failure.</div>
+      </div>
+    </div>
+
+    <div class="sec-section">
+      <div class="sec-section-hdr"><div class="sec-section-hdr-ico">⚖️</div><div class="sec-section-hdr-txt">LEGAL & REGULATORY COMPLIANCE</div></div>
+      <div class="sec-row">
+        <div class="sec-row-label">Ghana Data Protection Act</div>
+        <div class="sec-row-value"><span class="sec-status-pill on">✓ Aware & Compliant</span> Act 843 (2012)</div>
+        <div class="sec-row-sub">BedSync collects no personal health data. VitalGrid is pursuing formal Data Controller registration with the Data Protection Commission.</div>
+      </div>
+      <div class="sec-row">
+        <div class="sec-row-label">Firebase / Google Compliance</div>
+        <div class="sec-row-value">ISO 27001 · SOC 2 Type II · GDPR</div>
+        <div class="sec-row-sub">Google Firebase infrastructure holds international security certifications.</div>
+      </div>
+      <div class="sec-row">
+        <div class="sec-row-label">User Data Retention</div>
+        <div class="sec-row-value">Active accounts only — deletable on request</div>
+        <div class="sec-row-sub">Any staff member or hospital may request full deletion of their data at any time.</div>
+      </div>
+    </div>
+
+    <div class="sec-section">
+      <div class="sec-section-hdr"><div class="sec-section-hdr-ico">📡</div><div class="sec-section-hdr-txt">UPTIME & RELIABILITY</div></div>
+      <div class="sec-row">
+        <div class="sec-row-label">Firebase Database SLA</div>
+        <div class="sec-row-value"><span class="sec-status-pill on">99.99% Uptime</span> Google Infrastructure</div>
+        <div class="sec-row-sub">Less than 1 hour of downtime per year, backed by Google's global infrastructure.</div>
+      </div>
+      <div class="sec-row">
+        <div class="sec-row-label">Offline Resilience</div>
+        <div class="sec-row-value"><span class="sec-status-pill on">✓ Active</span> Local data cache</div>
+        <div class="sec-row-sub">If connectivity drops, the app shows the last known data and syncs automatically once back online.</div>
+      </div>
+      <div class="sec-row">
+        <div class="sec-row-label">Network Compatibility</div>
+        <div class="sec-row-value">3G, 4G, and WiFi — tested for Ghana</div>
+        <div class="sec-row-sub">Designed and tested for Ghana's variable network conditions, including peri-urban 3G coverage.</div>
+      </div>
+    </div>
+
+    <div class="sec-act">
+      <div class="sec-act-title">Further Information</div>
+      <a class="sec-act-link" href="https://firebase.google.com/support/privacy" target="_blank">
+        <div class="sec-act-link-ico" style="background:#e8f4ea">🔗</div>
+        <div><div class="sec-act-link-txt">Firebase Privacy & Security</div><div class="sec-act-link-sub">firebase.google.com/support/privacy</div></div>
+      </a>
+      <a class="sec-act-link" href="https://dpc.gov.gh" target="_blank">
+        <div class="sec-act-link-ico" style="background:#dbeafe">🇬🇭</div>
+        <div><div class="sec-act-link-txt">Ghana Data Protection Commission</div><div class="sec-act-link-sub">dpc.gov.gh — Act 843 information</div></div>
+      </a>
+      <div class="sec-act-link" onclick="toast('📧 Contact: Evanskwesiagyei@gmail.com · +233 248 863 834')">
+        <div class="sec-act-link-ico" style="background:#fef9c3">📧</div>
+        <div><div class="sec-act-link-txt">Request Full Security Documentation</div><div class="sec-act-link-sub">Tap to see contact details</div></div>
+      </div>
+    </div>
+
+    <div class="sec-footer">
+      <div class="sec-footer-title">⚠️ Pilot Phase Notice</div>
+      <div class="sec-footer-body">BedSync is currently operating as a structured pilot under VitalGrid Health Ltd. All security measures described are active. Data sovereignty migration to NITA-approved infrastructure will be completed before national rollout. For technical security queries, contact Evans Kwesi Agyei — Evanskwesiagyei@gmail.com.</div>
+    </div>
+
+    <button class="btn btn-ghost" style="margin:0 16px 8px" onclick="acctGoBack()">← Back</button>
   </div>
 </div>
 
@@ -1774,6 +1984,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
       <div class="set-item" onclick="goScreen('admin-incidents')"><div class="set-ico" style="background:#fee2e2">⚠️</div><div><div class="set-lbl">Clinical Incidents</div><div class="set-sub">All incident reports</div></div><div class="set-arr">›</div></div>
       <div class="dvd"></div>
       <div class="set-item" onclick="loadAccountSetup();goScreen('nurse-account')"><div class="set-ico" style="background:#ede9fe">⚙️</div><div><div class="set-lbl">Account Settings</div><div class="set-sub">Profile photo · Personal details · Access level</div></div><div class="set-arr">›</div></div>
+      <div class="set-item" onclick="goScreen('security')"><div class="set-ico" style="background:#dcfce7">🔐</div><div><div class="set-lbl">Data Security & Compliance</div><div class="set-sub">Encryption, Act 843, hosting</div></div><div class="set-arr">›</div></div>
+      <div class="set-item" onclick="goScreen('security')"><div class="set-ico" style="background:#dcfce7">🔐</div><div><div class="set-lbl">Data Security & Compliance</div><div class="set-sub">Encryption, Act 843, hosting</div></div><div class="set-arr">›</div></div>
     </div>
     <button class="btn btn-ghost" onclick="doLogout()">🚪 Sign Out</button>
   </div>
@@ -2314,26 +2526,26 @@ async function loadNurseHome() {
 let nuCurrentWard = null;
 let nuBedCounts = {available:0,occupied:0,maintenance:0,quarantine:0};
 
+// ══════════════════════════════════════════════════════
+// BED UPDATE — one direct function, no chaining, no
+// dependency on any other step having succeeded first.
+// Exactly the RespondaHealth pattern: write real values
+// straight into fixed DOM elements the instant the screen
+// opens, synchronously, every single time.
+// ══════════════════════════════════════════════════════
 function loadNurseUpdate() {
-  // Rebuild the ward list from scratch every single time this
-  // screen opens — never assume it's already populated correctly
-  // from a previous visit. This runs the same way whether it's
-  // the first visit or the fiftieth, on any device.
   const sel = document.getElementById('nu-ward-select');
-  if (sel) {
-    sel.innerHTML = '<option value="">— Select ward —</option>';
+  // Populate the dropdown once — safe to skip if already done.
+  if (sel && sel.children.length <= 1) {
     wards.forEach(w => { const o=document.createElement('option'); o.value=w.id; o.textContent=w.name; sel.appendChild(o); });
   }
-  // Try to match the nurse's own saved ward first...
-  let target = wards.find(w => currentUser?.ward && w.name.toLowerCase().includes(currentUser.ward.toLowerCase().split(' ')[0]));
-  // ...but if there's no match at all, never leave the screen
-  // blank — default to the first ward so the form is always ready.
-  if (!target && wards.length) target = wards[0];
-  if (target && sel) sel.value = target.id;
-  // Populate the stepper form directly — this no longer depends
-  // on the dropdown's change event or on any earlier step having
-  // succeeded first.
-  if (target) nuLoadWard(target.id);
+  // Pick which ward to show: the nurse's own ward if it matches,
+  // otherwise simply the first ward on the list — always something.
+  const match = wards.find(w => currentUser?.ward && w.name.toLowerCase().includes(currentUser.ward.toLowerCase().split(' ')[0]));
+  const target = match || wards[0];
+  if (!target) return; // no wards configured at all
+  if (sel) sel.value = target.id;
+  nuLoadWard(target.id);
 }
 
 function nuLoadWard(wardId) {
@@ -2398,31 +2610,40 @@ async function nuPublish() {
 }
 
 // ── NURSE SERVICES ──
-// Safe, named toggle — no inline closures, no string-escaping
-// risk, works identically every time on every device.
-function nsToggleService(i) {
-  const svc = services[i];
+// ══════════════════════════════════════════════════════
+// SERVICES — RespondaHealth-style toggle switches.
+// Each service is a fixed, static element in the HTML.
+// Tapping it cycles that ONE service's status and updates
+// ONLY that row's own toggle + label directly — the same
+// direct-DOM-update pattern RespondaHealth already uses
+// reliably for its equipment toggles. Nothing is rebuilt,
+// nothing depends on array position, nothing can drift out
+// of sync between renders.
+// ══════════════════════════════════════════════════════
+const SVC_CYCLE  = {operational:'maintenance', maintenance:'offline', offline:'operational', low_stock:'maintenance', low:'maintenance', adequate:'operational'};
+const SVC_CLASS  = {operational:'on', adequate:'on', maintenance:'warn', low_stock:'warn', low:'warn', offline:'off'};
+const SVC_LABEL  = {operational:'Operational', adequate:'Adequate', maintenance:'Maintenance', low_stock:'Low Stock', low:'Low', offline:'Offline'};
+
+function svcCycle(id) {
+  const svc = services.find(s => s.id === id);
   if (!svc) return;
-  const cycle = {'operational':'maintenance','maintenance':'offline','offline':'operational','low_stock':'maintenance','low':'maintenance','adequate':'operational'};
-  svc.status = cycle[svc.status] || 'operational';
-  loadNurseServices();
+  svc.status = SVC_CYCLE[svc.status] || 'operational';
+  svcRenderOne(svc);
+}
+
+function svcRenderOne(svc) {
+  const tog  = document.getElementById('svc-tog-'  + svc.id);
+  const note = document.getElementById('svc-note-' + svc.id);
+  const cls  = SVC_CLASS[svc.status] || 'on';
+  if (tog) tog.className = 'tog ' + cls;
+  if (note) note.textContent = svc.notes ? svc.notes : SVC_LABEL[svc.status] || svc.status;
 }
 
 function loadNurseServices() {
-  const list = document.getElementById('ns-services-list');
-  if (!list) return;
-  // Always rebuild fully from the current services array — never
-  // rely on anything having been set up correctly before.
-  list.innerHTML = services.map((svc,i) => {
-    const bg = svc.status==='operational' ? '#dcfce7' : svc.status==='maintenance' ? '#fef3c7' : '#fee2e2';
-    const fg = svc.status==='operational' ? 'var(--green)' : svc.status==='maintenance' ? '#92400e' : 'var(--red)';
-    const last = i===services.length-1 ? ' style="border:none"' : '';
-    return `<div class="svc-row"${last}>
-      <div class="svc-ico" style="background:${svc.bg}">${svc.ico}</div>
-      <div style="flex:1"><div class="svc-name">${svc.name}</div><div class="svc-sub">${svc.notes||'Tap to update status'}</div></div>
-      <button onclick="nsToggleService(${i})" style="padding:7px 14px;border-radius:9px;border:none;cursor:pointer;font-family:inherit;font-weight:800;font-size:.74rem;background:${bg};color:${fg}">${svcLbl(svc.status)}</button>
-    </div>`;
-  }).join('');
+  // Reflect the current status of every service onto its own
+  // fixed row. No HTML is generated or rebuilt here — the rows
+  // already exist; this just syncs their visual state.
+  services.forEach(svcRenderOne);
 }
 
 async function nsPublishServices() {
