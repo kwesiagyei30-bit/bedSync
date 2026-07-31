@@ -1236,7 +1236,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
         <div class="card-title">Notes</div>
         <textarea class="fi" id="nu-notes" rows="3" placeholder="Any additional notes for this ward — staffing issues, supply shortages, special cases..."></textarea>
       </div>
-      <button class="btn btn-teal" onclick="nuPublish()">📡 Publish Ward Update</button>
+      <button onclick="nuPublish()" style="display:flex;align-items:center;justify-content:center;gap:9px;width:100%;padding:16px;border-radius:14px;border:none;background:var(--green);color:#fff;font-size:.95rem;font-weight:800;cursor:pointer;font-family:inherit;box-shadow:0 4px 16px rgba(22,163,74,.35)">📡 Publish Ward Update</button>
     </div>
   </div>
   <div class="bnav">
@@ -1257,7 +1257,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   <div class="scroll">
     <div class="ab a" style="margin-bottom:10px"><span class="ab-ico">💡</span><div><div class="ab-title">Tap to cycle status</div><div class="ab-body">Operational → Maintenance → Offline. Updates are visible to all roles within 2 seconds.</div></div></div>
     <div class="card" id="ns-services-list"></div>
-    <button class="btn btn-teal mt12" onclick="nsPublishServices()">📡 Publish Services Update</button>
+    <button onclick="nsPublishServices()" style="display:flex;align-items:center;justify-content:center;gap:9px;width:100%;padding:16px;border-radius:14px;border:none;background:var(--green);color:#fff;font-size:.95rem;font-weight:800;cursor:pointer;font-family:inherit;box-shadow:0 4px 16px rgba(22,163,74,.35);margin-top:12px">📡 Publish Services Update</button>
   </div>
   <div class="bnav">
     <div class="bni" onclick="goScreen('nurse-home')"><div class="bni-ico">🏠</div>Home</div>
@@ -2398,20 +2398,31 @@ async function nuPublish() {
 }
 
 // ── NURSE SERVICES ──
+// Safe, named toggle — no inline closures, no string-escaping
+// risk, works identically every time on every device.
+function nsToggleService(i) {
+  const svc = services[i];
+  if (!svc) return;
+  const cycle = {'operational':'maintenance','maintenance':'offline','offline':'operational','low_stock':'maintenance','low':'maintenance','adequate':'operational'};
+  svc.status = cycle[svc.status] || 'operational';
+  loadNurseServices();
+}
+
 function loadNurseServices() {
   const list = document.getElementById('ns-services-list');
   if (!list) return;
-  const cycleStatus = (svc) => {
-    const cycle = {'operational':'maintenance','maintenance':'offline','offline':'operational','low_stock':'maintenance','low':'maintenance','adequate':'operational'};
-    svc.status = cycle[svc.status] || 'operational';
-    loadNurseServices();
-  };
-  list.innerHTML = services.map((svc,i) => `
-    <div class="svc-row" ${i===services.length-1?'style="border:none"':''}>
+  // Always rebuild fully from the current services array — never
+  // rely on anything having been set up correctly before.
+  list.innerHTML = services.map((svc,i) => {
+    const bg = svc.status==='operational' ? '#dcfce7' : svc.status==='maintenance' ? '#fef3c7' : '#fee2e2';
+    const fg = svc.status==='operational' ? 'var(--green)' : svc.status==='maintenance' ? '#92400e' : 'var(--red)';
+    const last = i===services.length-1 ? ' style="border:none"' : '';
+    return `<div class="svc-row"${last}>
       <div class="svc-ico" style="background:${svc.bg}">${svc.ico}</div>
       <div style="flex:1"><div class="svc-name">${svc.name}</div><div class="svc-sub">${svc.notes||'Tap to update status'}</div></div>
-      <button onclick="(function(){const s=services[${i}];s.status=s.status==='operational'?'maintenance':s.status==='maintenance'?'offline':'operational';loadNurseServices();})()" style="padding:4px 12px;border-radius:8px;border:none;cursor:pointer;font-family:inherit;font-weight:700;font-size:.7rem;background:${svc.status==='operational'?'#dcfce7':svc.status==='maintenance'?'#fef3c7':'#fee2e2'};color:${svc.status==='operational'?'var(--green)':svc.status==='maintenance'?'#92400e':'var(--red)'}">${svcLbl(svc.status)}</button>
-    </div>`).join('');
+      <button onclick="nsToggleService(${i})" style="padding:7px 14px;border-radius:9px;border:none;cursor:pointer;font-family:inherit;font-weight:800;font-size:.74rem;background:${bg};color:${fg}">${svcLbl(svc.status)}</button>
+    </div>`;
+  }).join('');
 }
 
 async function nsPublishServices() {
